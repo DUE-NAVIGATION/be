@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.3</version>
+		<relativePath/>
+	</parent>
+
+	<groupId>com.due</groupId>
+	<artifactId>due-backend</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>due-backend</name>
+	<description>DUE — 복지 사각지대 내비게이터 백엔드 (규칙 엔진 · 계산 엔진 · AI 게이트웨이)</description>
+
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<!-- 설정 클래스 자동완성용. 런타임 영향 없음 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!--
+		  주의: JPA/PostgreSQL 은 일부러 넣지 않았다.
+		  - 제도 데이터는 resources/programs/*.json 에서 로드한다 (CLAUDE.md: 하드코딩 금지, JSON)
+		  - 사용자 입력은 어디에도 저장하지 않는다 (설계 원칙 2)
+		  - DataSource 가 없으면 앱이 부팅에 실패한다 → 데모 리스크
+		  DB 가 정말 필요해지면 그때 추가한다.
+		-->
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

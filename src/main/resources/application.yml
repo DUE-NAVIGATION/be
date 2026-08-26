@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: due-backend
+  jackson:
+    default-property-inclusion: non_null   # null 필드는 응답에서 뺀다 (모르는 값 = 없는 값)
+    property-naming-strategy: LOWER_CAMEL_CASE
+  servlet:
+    multipart:
+      max-file-size: 10MB      # 문서 업로드 (Phase 6). 업로드본은 OCR 직후 폐기한다
+      max-request-size: 10MB
+
+server:
+  port: 8080
+
+due:
+  # true 면 AI 호출 없이 캐시 응답 사용 (Phase 7 데모 안정화)
+  demo-mode: ${DEMO_MODE:false}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+  anthropic:
+    api-key: ${ANTHROPIC_API_KEY:}
+    model: ${ANTHROPIC_MODEL:claude-sonnet-5}
+    timeout-seconds: 8         # 데모에서 8초 넘게 멈춰 있으면 안 된다
+
+logging:
+  level:
+    com.due: DEBUG
+# ★ 사용자 입력값을 로그에 남기지 않는다. 민감정보다 (설계 원칙 2)
