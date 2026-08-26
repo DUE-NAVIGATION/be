@@ -36,6 +36,12 @@ type UserContext struct {
 	// 자녀 나이 목록 (만 나이). nil = 모름, []int{} = 자녀 없음
 	ChildrenAges  []int `json:"childrenAges,omitempty"`
 	HasDisability *bool `json:"hasDisability,omitempty"`
+	// 장애 정도. HasDisability 가 true 여도 정도를 모를 수 있으므로 별도 필드다
+	DisabilityLevel *DisabilityLevel `json:"disabilityLevel,omitempty"`
+	// 임신·출산 여부
+	IsPregnant *bool `json:"isPregnant,omitempty"`
+	// 기초생활수급 자격 구분. 배제·선행 조건 판정에 자주 쓰인다
+	BasicLivelihoodType *BasicLivelihoodType `json:"basicLivelihoodType,omitempty"`
 	// 현재 수급 중인 제도 id 또는 급여 코드. 배제 조건 판정용
 	ReceivingPrograms []string `json:"receivingPrograms,omitempty"`
 	// 거주 지역 (시도 단위)
@@ -72,6 +78,31 @@ const (
 	EmploymentOther        EmploymentStatus = "OTHER"
 )
 
+// DisabilityLevel 은 장애 정도다.
+//
+// ★ 등급제 폐지 이후의 구분(심한 장애 / 심하지 않은 장애)을 따른다.
+// 제도별 세부 기준은 제도 JSON 에서 다루고, 여기서는 두 값만 갖는다.
+type DisabilityLevel string
+
+const (
+	DisabilitySevere DisabilityLevel = "SEVERE" // 심한 장애
+	DisabilityMild   DisabilityLevel = "MILD"   // 심하지 않은 장애
+)
+
+// BasicLivelihoodType 은 기초생활보장 급여 구분이다.
+//
+// NONE 은 "수급자가 아님" 이라는 정보다. 모른다는 뜻이 아니다 —
+// 모르면 필드 자체가 nil 이어야 한다.
+type BasicLivelihoodType string
+
+const (
+	BasicLivelihood          BasicLivelihoodType = "LIVELIHOOD" // 생계급여
+	BasicLivelihoodMedical   BasicLivelihoodType = "MEDICAL"    // 의료급여
+	BasicLivelihoodHousing   BasicLivelihoodType = "HOUSING"    // 주거급여
+	BasicLivelihoodEducation BasicLivelihoodType = "EDUCATION"  // 교육급여
+	BasicLivelihoodNone      BasicLivelihoodType = "NONE"       // 수급자 아님
+)
+
 // ── 포인터 리터럴 헬퍼 ────────────────────────────────────────
 // 테스트와 제도 데이터 작성에서 &42 를 쓸 수 없으므로 필요하다.
 
@@ -83,3 +114,7 @@ func Str(v string) *string     { return &v }
 
 func Housing(v HousingType) *HousingType              { return &v }
 func Employment(v EmploymentStatus) *EmploymentStatus { return &v }
+
+func Disability(v DisabilityLevel) *DisabilityLevel { return &v }
+
+func BasicLivelihoodOf(v BasicLivelihoodType) *BasicLivelihoodType { return &v }

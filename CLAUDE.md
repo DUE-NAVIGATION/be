@@ -34,16 +34,19 @@
 ## 기술 스택
 
 - Go 1.22+
-- 라우팅: 표준 net/http (Go 1.22 라우팅 패턴) 또는 chi
-- CORS: rs/cors
+- 라우팅: 표준 net/http (Go 1.22 라우팅 패턴)
+- CORS: 표준 라이브러리로 직접 작성 (`cmd/server/main.go` 의 `withCORS`).
+  오리진 허용 + 프리플라이트가 전부라 rs/cors 는 과하다
+- ★ 외부 의존성 0개를 유지한다. `go run` 한 번으로 떠야 한다.
+  현장 와이파이에서 `go mod download` 가 실패해 데모가 막히면 안 된다
 - DB 없음. ORM 없음. 저장하지 않으므로 필요 없다
 - GraphQL 쓰지 않는다. 엔드포인트가 5개뿐이라 과설계다
 - AI: Claude API를 net/http로 직접 호출 (SDK 불필요)
 
 ## 폴더 구조
 
-    api/
-      cmd/server/main.go        진입점
+    be/
+      cmd/server/main.go        진입점 (라우팅 · CORS · 그레이스풀 셧다운)
       cmd/validate/main.go      제도 JSON 검증 CLI
       internal/
         rules/                  규칙 엔진 (순수 함수) ★ 핵심
@@ -64,9 +67,14 @@
     POST /api/explain     { results }      → { explanation }
     POST /api/document    { imageBase64 }  → { summary, todos[], deadline, ... }
     GET  /api/programs                     → { programs[] }
-    GET  /healthz                          → 200
+    GET  /healthz                          → { status, service, storesUserData }
 
+- ★ 헬스체크만 `/api` 접두어가 없다. 프론트 `lib/api.ts` 의 `getHealth` 와 맞춰야 한다.
+  한쪽을 바꾸면 첫 화면이 "백엔드에 연결할 수 없습니다"로 뜬다
 - 요청·응답 필드는 camelCase로 통일 (프론트가 TypeScript)
+- enum 값은 UPPER_SNAKE로 통일 (`ELIGIBLE` `MONTHLY_RENT` `HIGH`).
+  제도 JSON의 연산자(`between` `lte` …)만 예외적으로 소문자다 — 사람이 손으로 쓰기 때문
+- `internal/model/*`는 프론트 `types/index.ts`의 원본이다. 한쪽만 고치면 런타임에 깨진다
 - 에러는 { error: { code, message } } 형태로 일관되게
 - 모든 성공 응답에 disclaimer 포함:
   "실제 수급 여부는 관할 기관의 심사로 결정됩니다"

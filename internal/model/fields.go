@@ -17,6 +17,9 @@ const (
 	FieldIsSingleParent     = "isSingleParent"
 	FieldChildrenAges       = "childrenAges"
 	FieldHasDisability      = "hasDisability"
+	FieldDisabilityLevel    = "disabilityLevel"
+	FieldIsPregnant         = "isPregnant"
+	FieldBasicLivelihood    = "basicLivelihoodType"
 	FieldReceivingPrograms  = "receivingPrograms"
 	FieldRegion             = "region"
 	FieldHouseholdIncomePct = "householdIncomePct"
@@ -28,14 +31,17 @@ func KnownFields() []string {
 	return []string{
 		FieldAge,
 		FieldAssets,
+		FieldBasicLivelihood,
 		FieldChildrenAges,
 		FieldDeposit,
+		FieldDisabilityLevel,
 		FieldEmploymentStatus,
 		FieldHasDisability,
 		FieldHouseholdIncomePct,
 		FieldHouseholdSize,
 		FieldHousingType,
 		FieldIncomeMonthly,
+		FieldIsPregnant,
 		FieldIsSingleParent,
 		FieldMonthlyRent,
 		FieldReceivingPrograms,
@@ -61,7 +67,7 @@ func FieldExists(field string) bool {
 //	known  값을 아는가. false 면 판정은 UNKNOWN 이다 (FAIL 이 아니다)
 //	exists 그런 이름의 필드가 있는가. false 면 제도 JSON 이 잘못된 것이다
 //
-// ★ 리플렉션을 쓰지 않는다. 필드가 15개뿐이고, 명시적인 switch 가
+// ★ 리플렉션을 쓰지 않는다. 필드가 십수 개뿐이고, 명시적인 switch 가
 // 컴파일 타임 검사를 받으며 validate CLI 와 목록을 공유할 수 있기 때문이다.
 func Lookup(ctx UserContext, field string) (value any, known bool, exists bool) {
 	switch field {
@@ -135,6 +141,24 @@ func Lookup(ctx UserContext, field string) (value any, known bool, exists bool) 
 			return nil, false, true
 		}
 		return *ctx.HasDisability, true, true
+
+	case FieldDisabilityLevel:
+		if ctx.DisabilityLevel == nil {
+			return nil, false, true
+		}
+		return string(*ctx.DisabilityLevel), true, true
+
+	case FieldIsPregnant:
+		if ctx.IsPregnant == nil {
+			return nil, false, true
+		}
+		return *ctx.IsPregnant, true, true
+
+	case FieldBasicLivelihood:
+		if ctx.BasicLivelihoodType == nil {
+			return nil, false, true
+		}
+		return string(*ctx.BasicLivelihoodType), true, true
 
 	case FieldReceivingPrograms:
 		if ctx.ReceivingPrograms == nil {

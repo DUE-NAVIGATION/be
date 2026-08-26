@@ -54,13 +54,24 @@ data/
 | POST   | `/api/explain`   | `{ results }`   | `{ explanation }`                                 |
 | POST   | `/api/document`  | `{ imageBase64 }` | `{ summary, todos[], deadline, ... }`           |
 | GET    | `/api/programs`  | —               | `{ programs[] }`                                  |
-| GET    | `/healthz`       | —               | `200`                                             |
+| GET    | `/healthz`       | —               | `{ status, service, storesUserData }`             |
 
+- ★ 헬스체크만 `/api` 접두어가 없다. 프론트 `lib/api.ts`의 `getHealth`가 이 경로를 부른다
 - 에러는 `{ error: { code, message } }` 로 통일
 - 모든 성공 응답에 `disclaimer` 포함 — "실제 수급 여부는 관할 기관의 심사로 결정됩니다"
+- enum 값은 UPPER_SNAKE (`ELIGIBLE` `MONTHLY_RENT` `HIGH`).
+  제도 JSON의 연산자(`between` `lte` …)만 소문자다
 
-> Phase 0 기준으로 `/healthz` 만 구현돼 있다. 나머지는 Phase 5에서 붙는다.
+> 지금은 `/healthz` 만 구현돼 있다. 나머지는 Phase 5에서 붙는다.
 > 요청·응답 예시는 그때 이 문서에 채운다.
+
+### CORS
+
+브라우저에서 부르려면 `.env`의 `CORS_ALLOWED_ORIGINS`에 프론트 오리진이 있어야 한다
+(기본값 `http://localhost:3000`). 쉼표로 여러 개를 넣을 수 있고, **정확히 일치**해야 통과한다.
+
+허용 목록에 없으면 서버는 200을 주지만 CORS 헤더를 붙이지 않으므로 브라우저가 응답을 버린다.
+첫 화면이 "백엔드에 연결할 수 없습니다"로 뜨는데 `curl`은 되는 상황이면 여기를 먼저 본다.
 
 ## 설계 원칙 (요약)
 
@@ -85,7 +96,7 @@ data/
 
 ## 현재 상태
 
-**Phase 1 완료** — 폴더 구조, 공용 타입, `/healthz`, 규칙 엔진(`internal/rules`).
+**Phase 1 완료** — 폴더 구조, 공용 타입, `/healthz`, CORS, 규칙 엔진(`internal/rules`).
 
 다음은 **Phase 2 소득 계산 + 중복수급**. 제도 JSON 작성은 **병렬로** 시작해야 한다 —
 코딩보다 오래 걸리는 최대 병목이다.

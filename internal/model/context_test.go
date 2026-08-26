@@ -118,3 +118,60 @@ func TestJSONShape(t *testing.T) {
 		t.Errorf("JSON 이 다르다\n got: %s\nwant: %s", got, want)
 	}
 }
+
+// 프론트 types/index.ts 의 UserContext 와 필드가 어긋나면 런타임에 깨진다.
+// 뒤늦게 추가된 필드들이 Lookup 과 KnownFields 양쪽에 등록됐는지 고정한다.
+func TestLaterAddedFields(t *testing.T) {
+	body := `{
+		"disabilityLevel": "SEVERE",
+		"isPregnant": true,
+		"basicLivelihoodType": "HOUSING"
+	}`
+
+	var ctx model.UserContext
+	if err := json.Unmarshal([]byte(body), &ctx); err != nil {
+		t.Fatalf("언마샬 실패: %v", err)
+	}
+
+	tests := []struct {
+		field string
+		want  any
+	}{
+		{model.FieldDisabilityLevel, "SEVERE"},
+		{model.FieldIsPregnant, true},
+		{model.FieldBasicLivelihood, "HOUSING"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.field, func(t *testing.T) {
+			got, known, exists := model.Lookup(ctx, tt.field)
+			if !exists {
+				t.Fatalf("%s 가 없는 필드로 나왔다 — KnownFields 와 switch 를 확인하라", tt.field)
+			}
+			if !known {
+				t.Fatalf("%s 를 읽지 못했다", tt.field)
+			}
+			if got != tt.want {
+				t.Errorf("value = %v(%T), 기대값 %v(%T)", got, got, tt.want, tt.want)
+			}
+		})
+	}
+}
+
+// NONE 은 "수급자가 아님" 이라는 정보다. 모름(nil)과 같아지면 안 된다.
+func TestBasicLivelihoodNoneIsKnown(t *testing.T) {
+	var unknown model.UserContext
+	if _, known, _ := model.Lookup(unknown, model.FieldBasicLivelihood); known {
+		t.Error("미입력이 아는 값으로 나왔다")
+	}
+
+	none := model.UserContext{
+		BasicLivelihoodType: model.BasicLivelihoodOf(model.BasicLivelihoodNone),
+	}
+	got, known, _ := model.Lookup(none, model.FieldBasicLivelihood)
+	if !known {
+		t.Error("NONE(수급자 아님)이 모름으로 나왔다")
+	}
+	if got != "NONE" {
+		t.Errorf("value = %v, 기대값 NONE", got)
+	}
+}

@@ -61,12 +61,15 @@ type Summary struct {
 }
 
 // Confidence 는 AI 추출의 필드별 확신도다 (Phase 4).
+//
+// ★ 값은 대문자다. 이 프로젝트의 모든 enum 이 UPPER_SNAKE 이고
+// (PASS / ELIGIBLE / MONTHLY_RENT …), 프론트 타입도 그 규칙을 따른다.
 type Confidence string
 
 const (
-	ConfidenceHigh   Confidence = "high"
-	ConfidenceMedium Confidence = "medium"
-	ConfidenceLow    Confidence = "low"
+	ConfidenceHigh   Confidence = "HIGH"
+	ConfidenceMedium Confidence = "MEDIUM"
+	ConfidenceLow    Confidence = "LOW"
 )
 
 // Disclaimer 는 모든 성공 응답에 포함되는 고지다.

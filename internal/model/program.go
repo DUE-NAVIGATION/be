@@ -99,6 +99,8 @@ type Source struct {
 	RevisedAt string `json:"revisedAt"`
 	// 출처 기관명
 	Agency string `json:"agency,omitempty"`
+	// 작성자 메모 (근거 문서, 대조가 필요한 사항 등). 판정에는 쓰이지 않는다
+	Note string `json:"note,omitempty"`
 }
 
 // Category 는 제도 분류다.
