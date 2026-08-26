@@ -1,0 +1,8 @@
+# Go 는 LF 를 쓴다. 윈도우에서 작업해도 CRLF 가 섞이지 않게 고정한다.
+# (CRLF 가 섞이면 gofmt -l 이 파일 전체를 바뀐 것으로 잡는다)
+* text=auto eol=lf
+
+*.go   text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
