@@ -1,0 +1,9 @@
+{
+  "id": "no-source",
+  "name": "출처 없음",
+  "category": "INCOME",
+  "eligibility": { "all": [ { "field": "age", "op": "gte", "value": 19 } ] },
+  "benefit": { "type": "ONCE", "amount": 100000 },
+  "apply": { "channel": ["BOKJIRO"], "documents": [] },
+  "source": { "url": "https://example.test" }
+}

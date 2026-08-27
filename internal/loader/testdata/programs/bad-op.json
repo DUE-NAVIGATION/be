@@ -1,0 +1,9 @@
+{
+  "id": "bad-op",
+  "name": "모르는 연산자",
+  "category": "INCOME",
+  "eligibility": { "all": [ { "field": "age", "op": "morethan", "value": 19 } ] },
+  "benefit": { "type": "ONCE", "amount": 100000 },
+  "apply": { "channel": ["BOKJIRO"], "documents": [] },
+  "source": { "url": "https://example.test", "revisedAt": "2026-01-01" }
+}

@@ -96,9 +96,15 @@ data/
 
 ## 현재 상태
 
-**Phase 2 완료** — 폴더 구조, 공용 타입, `/healthz`, CORS, 규칙 엔진(`internal/rules`),
-소득 계산(`internal/income`), 예상 수령액·중복수급 정리.
+**Phase 3 완료** — 규칙 엔진, 소득 계산, 예상 수령액·중복수급, 제도 로더·검증 CLI.
+제도 데이터 3건 (팀이 계속 추가).
 
-다음은 **Phase 3 제도 로더 + 검증 CLI**. `data/programs/` 가 아직 비어 있어
-판정할 대상이 없다. 제도 JSON 작성은 코딩보다 오래 걸리는 최대 병목이므로
-검증 도구와 작성 가이드를 먼저 내놓고 팀이 **병렬로** 채워야 한다.
+```bash
+go run ./cmd/validate   # 제도 JSON 검사
+```
+
+제도 추가는 [data/programs/README.md](data/programs/README.md) 를 보고 JSON 한 건을 넣으면 된다.
+코드를 고칠 필요가 없다.
+
+다음은 **Phase 4 AI 계층** (시크릿 필터 → 구조화 → 설명) 또는
+**Phase 5 HTTP 계층** (/api/evaluate 연결). 제도 데이터 확충은 계속 병렬로 진행한다.

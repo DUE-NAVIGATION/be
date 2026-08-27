@@ -1,0 +1,58 @@
+{
+  "id": "youth-monthly-rent",
+  "name": "청년월세 한시 특별지원",
+  "category": "HOUSING",
+  "summary": "부모와 따로 사는 무주택 청년에게 월세를 최대 24개월 지원합니다.",
+
+  "eligibility": {
+    "all": [
+      {
+        "field": "age",
+        "op": "between",
+        "value": [19, 34],
+        "label": "만 19~34세"
+      },
+      {
+        "field": "housingType",
+        "op": "in",
+        "value": ["MONTHLY_RENT"],
+        "label": "월세로 거주",
+        "note": "보증금·월세 상한 요건은 2024-04-12 폐지되었다. 기획서 예시의 '보증금 5천만원 이하'는 더 이상 맞지 않으므로 조건에 넣지 않았다."
+      },
+      {
+        "field": "householdIncomePct",
+        "op": "lte",
+        "value": 60,
+        "label": "청년독립가구 기준중위소득 60% 이하"
+      }
+    ],
+    "none": [
+      {
+        "field": "receivingPrograms",
+        "op": "contains",
+        "value": "HOUSING_BENEFIT",
+        "label": "주거급여를 받고 있지 않을 것"
+      }
+    ]
+  },
+
+  "benefit": {
+    "type": "MONTHLY",
+    "amount": 200000,
+    "months": 24,
+    "note": "월 최대 20만원. 최대 24개월. 연간 예상액은 첫 1년치(240만원)로 계산된다."
+  },
+
+  "apply": {
+    "channel": ["BOKJIRO", "COMMUNITY_CENTER"],
+    "documents": ["임대차계약서", "월세 이체 증빙", "가족관계증명서", "청약통장 가입 증명"],
+    "period": "2026년부터 연중 상시 신청"
+  },
+
+  "source": {
+    "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00004661",
+    "revisedAt": "2026-01-01",
+    "agency": "국토교통부",
+    "note": "★ 미반영 요건 2건 — 담당자가 공식 지침으로 확인 후 보완할 것. (1) 원가구(부모) 기준중위소득 100% 이하·재산 4.7억 이하: UserContext 에 부모 소득 필드가 없어 표현 불가. (2) 무주택·청약통장 가입 여부: 해당 필드 없음. 두 요건 모두 지금은 판정에서 빠져 있으므로 실제보다 넓게 해당될 수 있다."
+  }
+}

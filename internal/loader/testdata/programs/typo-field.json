@@ -1,0 +1,9 @@
+{
+  "id": "typo-field",
+  "name": "오타 난 필드",
+  "category": "INCOME",
+  "eligibility": { "all": [ { "field": "incomeMontly", "op": "lte", "value": 1000000 } ] },
+  "benefit": { "type": "ONCE", "amount": 100000 },
+  "apply": { "channel": ["BOKJIRO"], "documents": [] },
+  "source": { "url": "https://example.test", "revisedAt": "2026-01-01" }
+}

@@ -100,7 +100,7 @@
 - [x] Phase 0 — 셋업 + 타입 정의
 - [x] Phase 1 — 규칙 엔진 `internal/rules` ★ 최우선
 - [x] Phase 2 — 소득 계산 + 중복수급
-- [ ] Phase 3 — 제도 로더 + 검증 CLI (제도 JSON 작성은 팀원이 병렬로)
+- [x] Phase 3 — 제도 로더 + 검증 CLI (제도 데이터는 3건. 팀이 계속 추가)
 - [ ] Phase 4 — AI 계층 (시크릿 필터 → 구조화 → 설명)
 - [ ] Phase 5 — HTTP 계층
 - [ ] Phase 6 — 문서 번역 (여유 시)

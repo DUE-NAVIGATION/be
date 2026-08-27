@@ -1,0 +1,9 @@
+{
+  "id": "good-program",
+  "name": "id 가 중복된 제도",
+  "category": "MEDICAL",
+  "eligibility": { "all": [ { "field": "age", "op": "gte", "value": 19 } ] },
+  "benefit": { "type": "ONCE", "amount": 100000 },
+  "apply": { "channel": ["BOKJIRO"], "documents": [] },
+  "source": { "url": "https://example.test", "revisedAt": "2026-01-01" }
+}

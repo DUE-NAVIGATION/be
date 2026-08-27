@@ -1,0 +1,9 @@
+{
+  "id": "good-program",
+  "name": "정상 제도",
+  "category": "HOUSING",
+  "eligibility": { "all": [ { "field": "age", "op": "between", "value": [19, 34] } ] },
+  "benefit": { "type": "MONTHLY", "amount": 200000, "months": 12 },
+  "apply": { "channel": ["BOKJIRO"], "documents": ["임대차계약서"] },
+  "source": { "url": "https://example.test", "revisedAt": "2026-01-01" }
+}

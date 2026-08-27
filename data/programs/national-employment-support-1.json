@@ -1,0 +1,59 @@
+{
+  "id": "national-employment-support-1",
+  "name": "국민취업지원제도 I유형",
+  "category": "EMPLOYMENT",
+  "summary": "저소득 구직자에게 구직촉진수당을 월 60만원씩 6개월간 지급하고 취업지원 서비스를 제공합니다.",
+
+  "eligibility": {
+    "all": [
+      {
+        "field": "age",
+        "op": "between",
+        "value": [15, 69],
+        "label": "만 15~69세"
+      },
+      {
+        "field": "householdIncomePct",
+        "op": "lte",
+        "value": 60,
+        "label": "기준중위소득 60% 이하"
+      },
+      {
+        "field": "assets",
+        "op": "lte",
+        "value": 400000000,
+        "label": "재산 4억원 이하",
+        "note": "만 18~34세 청년은 5억원까지 인정된다. 연령에 따라 달라지는 상한을 한 조건으로 표현할 수 없어 낮은 쪽으로 적었다. 청년이 재산 4~5억 구간이면 실제로는 해당인데 미해당으로 나온다."
+      }
+    ],
+    "none": [
+      {
+        "field": "employmentStatus",
+        "op": "eq",
+        "value": "EMPLOYED",
+        "label": "재직 중이 아닐 것",
+        "note": "구직자 대상 제도다. 재직자는 제외한다."
+      }
+    ]
+  },
+
+  "benefit": {
+    "type": "MONTHLY",
+    "amount": 600000,
+    "months": 6,
+    "note": "구직촉진수당. 2026년 월 50만원에서 60만원으로 인상되었다. 부양가족이 있으면 추가 지원이 있으나 여기에는 반영하지 않았다."
+  },
+
+  "apply": {
+    "channel": ["WORK24", "EMPLOYMENT_CENTER"],
+    "documents": ["신분증", "취업활동계획서", "소득·재산 확인 서류"],
+    "period": "연중 상시 신청"
+  },
+
+  "source": {
+    "url": "https://www.work24.go.kr",
+    "revisedAt": "2026-01-01",
+    "agency": "고용노동부",
+    "note": "★ 2차 자료 기준으로 작성했다. 담당자가 고용노동부 공식 지침으로 대조하고 source.url 을 제도 상세 페이지로 교체할 것. 취업경험 요건(청년 특례 제외)은 UserContext 에 해당 필드가 없어 반영하지 못했다."
+  }
+}
