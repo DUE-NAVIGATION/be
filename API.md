@@ -21,7 +21,9 @@
 | `INVALID_REQUEST` | 400 | 값이 규칙에 맞지 않음 |
 | `BODY_TOO_LARGE` | 413 | 본문 1MB 초과 |
 | `NOT_FOUND` | 404 | 없는 경로 |
-| `NOT_IMPLEMENTED` | 501 | 아직 안 만든 기능 (Phase 4) |
+| `NOT_IMPLEMENTED` | 501 | 아직 안 만든 기능 (Phase 6 문서 번역) |
+| `AI_UNAVAILABLE` | 503 | AI 키가 없어 쓸 수 없음 → 수동 입력으로 폴백 |
+| `AI_FAILED` | 502 | AI 호출 실패 → 수동 입력으로 폴백 |
 | `INTERNAL` | 500 · 503 | 서버 오류, 제도 데이터 없음 |
 
 > **모르는 항목은 조용히 무시되지 않는다.** `incomeMontly` 처럼 오타를 보내면 400 과 함께
@@ -39,9 +41,13 @@
   "service": "due-api",
   "storesUserData": false,
   "programCount": 3,
-  "medianIncomeYear": 2026
+  "medianIncomeYear": 2026,
+  "aiEnabled": true
 }
 ```
+
+`aiEnabled` 가 `false` 면 `/api/extract` · `/api/explain` 이 503 을 돌려준다.
+대화형 입력 대신 **수동 입력 폼**을 띄워야 한다.
 
 ---
 
@@ -192,17 +198,85 @@
 
 ---
 
-## 아직 없는 것 (Phase 4)
+## POST /api/extract
 
-호출하면 **501 + `NOT_IMPLEMENTED`** 가 온다. 경로와 에러 형식은 확정이므로 미리 붙여도 된다.
+자연어를 판정 입력값으로 옮긴다. **판정하지 않는다** — 결과를 `/api/evaluate` 에 그대로 넣으면 판정이 된다.
+
+### 요청
+
+```json
+{ "text": "혼자 애 키우는데 일이 끊겼어요. 아이는 7살이고 월세 살아요." }
+```
+
+최대 2000자. 빈 문자열이면 400.
+
+### 응답
+
+```json
+{
+  "extracted": {
+    "householdSize": 2, "isSingleParent": true, "childrenAges": [7],
+    "employmentStatus": "LOST_JOB", "housingType": "MONTHLY_RENT"
+  },
+  "confidence": { "householdSize": "MEDIUM", "isSingleParent": "HIGH" },
+  "followUpQuestions": ["월 소득이 어느 정도인가요?"],
+  "sanitized": { "RESIDENT_ID": 1, "PHONE": 1 },
+  "disclaimer": "실제 수급 여부는 관할 기관의 심사로 결정됩니다"
+}
+```
+
+| 필드 | 화면에서 |
+| --- | --- |
+| `extracted` | 뽑아낸 값을 카드로 보여주고 **수정 가능**하게. AI 가 잘못 뽑을 수 있다 |
+| `confidence` | `LOW` 인 항목은 확인을 유도. `HIGH`/`MEDIUM`/`LOW` |
+| `followUpQuestions` | 되묻기. **최대 3개**. 서버가 잘라서 보낸다 |
+| `sanitized` | 전송 전에 가린 민감정보의 **종류·건수**. ★ 값은 들어 있지 않다 |
+
+- `extracted` 에는 **알아낸 항목만** 들어 있다. 나머지는 아예 없다 (모른다는 뜻)
+- `householdIncomePct` 는 **절대 오지 않는다.** 계산 엔진이 채우는 값이라 AI 가 채워도 서버가 지운다
+- `sanitized` 가 있으면 화면에 **"주민등록번호는 전송하지 않았습니다"** 처럼 알려주면 좋다
+
+## POST /api/explain
+
+이미 나온 판정 결과를 사람 말로 푼다. **판정을 다시 하지 않는다.**
+
+### 요청
+
+`/api/evaluate` 의 응답에서 `results` 와 `summary` 를 그대로 넣는다.
+
+```json
+{ "results": [ /* evaluate 의 results */ ], "summary": { /* evaluate 의 summary */ } }
+```
+
+### 응답
+
+```json
+{
+  "explanation": "입력하신 내용으로는 한부모가족 아동양육비를 받으실 수 있을 것으로 보입니다. ...",
+  "disclaimer": "실제 수급 여부는 관할 기관의 심사로 결정됩니다"
+}
+```
+
+> **사용자의 상황은 이 단계에서 전송되지 않는다.** 설명에 필요한 것은 "무엇이 어떻게 판정됐는가" 뿐이라, 소득·가족관계는 AI 로 나가지 않는다.
+
+## AI 를 쓸 수 없을 때
+
+두 엔드포인트 모두 실패할 수 있다. **프론트는 반드시 수동 입력 폼으로 폴백해야 한다.**
+
+| code | HTTP | 뜻 | 프론트가 할 일 |
+| --- | --- | --- | --- |
+| `AI_UNAVAILABLE` | 503 | 서버에 API 키가 없다 | 대화형 입력을 아예 숨기고 수동 폼만 |
+| `AI_FAILED` | 502 | 호출했지만 실패(시간 초과·형식 오류) | "직접 입력해 주세요" 안내 후 폼 |
+
+`GET /healthz` 의 **`aiEnabled`** 로 시작 시점에 미리 판단할 수 있다.
+
+## 아직 없는 것 (Phase 6)
 
 | 엔드포인트 | 요청 | 응답 (예정) |
 | --- | --- | --- |
-| `POST /api/extract` | `{ "text": "..." }` | `{ extracted, confidence, followUpQuestions }` |
-| `POST /api/explain` | `{ "results": [...] }` | `{ explanation }` |
 | `POST /api/document` | `{ "imageBase64": "..." }` | `{ summary, whatIsIt, todos, deadline, ... }` |
 
----
+호출하면 **501 + `NOT_IMPLEMENTED`** 가 온다.
 
 ## 빠른 확인 (curl)
 

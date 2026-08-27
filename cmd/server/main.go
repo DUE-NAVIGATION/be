@@ -12,10 +12,12 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
 
+	"github.com/DUE-NAVIGATION/be/internal/ai"
 	"github.com/DUE-NAVIGATION/be/internal/handler"
 	"github.com/DUE-NAVIGATION/be/internal/income"
 	"github.com/DUE-NAVIGATION/be/internal/loader"
@@ -53,9 +55,24 @@ func main() {
 			"guide", "data/programs/README.md")
 	}
 
+	// ── AI 게이트웨이 ───────────────────────────────────────
+	// ★ 키가 없어도 서버는 뜬다. 판정은 AI 없이 완전히 동작하고,
+	// 대화형 입력만 막힌다. 데모 중 키가 만료돼도 결과 화면은 살아 있어야 한다.
+	aiClient := ai.New(ai.Config{
+		APIKey:   os.Getenv("ANTHROPIC_API_KEY"), // ★ 코드에 넣지 않는다
+		Model:    env("ANTHROPIC_MODEL", ""),
+		Timeout:  envDuration("AI_TIMEOUT_SECONDS", 8*time.Second),
+		DemoMode: env("DEMO_MODE", "false") == "true",
+	})
+	if !aiClient.Enabled() {
+		slog.Warn("ANTHROPIC_API_KEY 가 없습니다. /api/extract 와 /api/explain 은 503 을 돌려줍니다",
+			"영향", "판정(/api/evaluate)은 정상 동작합니다")
+	}
+
 	api := &handler.API{
 		Programs: store,
 		Income:   income.Calculator{Table: table},
+		AI:       aiClient,
 	}
 
 	srv := &http.Server{
@@ -75,6 +92,7 @@ func main() {
 		slog.Info("서버 시작",
 			"addr", addr,
 			"programs", store.Count(),
+			"aiEnabled", aiClient.Enabled(),
 			"medianIncomeYear", table.Year,
 			"demoMode", env("DEMO_MODE", "false"),
 			"corsAllowedOrigins", strings.Join(origins, ","),
@@ -153,6 +171,15 @@ func originAllowed(allowed []string, origin string) bool {
 		}
 	}
 	return false
+}
+
+// envDuration 은 초 단위 환경변수를 읽는다. 잘못된 값이면 기본값을 쓴다.
+func envDuration(key string, fallback time.Duration) time.Duration {
+	n, err := strconv.Atoi(os.Getenv(key))
+	if err != nil || n <= 0 {
+		return fallback
+	}
+	return time.Duration(n) * time.Second
 }
 
 func env(key, fallback string) string {

@@ -101,7 +101,7 @@
 - [x] Phase 1 — 규칙 엔진 `internal/rules` ★ 최우선
 - [x] Phase 2 — 소득 계산 + 중복수급
 - [x] Phase 3 — 제도 로더 + 검증 CLI (제도 데이터는 3건. 팀이 계속 추가)
-- [ ] Phase 4 — AI 계층 (시크릿 필터 → 구조화 → 설명)
+- [x] Phase 4 — AI 계층 (시크릿 필터 → 구조화 → 설명)
 - [x] Phase 5 — HTTP 계층 (extract/explain/document 는 Phase 4 에서)
 - [ ] Phase 6 — 문서 번역 (여유 시)
 - [ ] Phase 7 — 데모 안정화 ★ 반드시

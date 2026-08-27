@@ -96,19 +96,19 @@ data/
 
 ## 현재 상태
 
-**Phase 5 완료** — 규칙 엔진, 소득 계산, 예상 수령액·중복수급, 제도 로더·검증 CLI,
-HTTP 계층(`/healthz` · `/api/evaluate` · `/api/programs`).
-
-프론트는 [API.md](API.md) 만 보고 붙일 수 있다.
+**Phase 4 완료** — 규칙 엔진, 소득 계산, 예상 수령액·중복수급, 제도 로더·검증 CLI,
+HTTP 계층, **AI 계층**(시크릿 필터 · 자연어 구조화 · 결과 설명).
 
 ```bash
 go run ./cmd/server     # http://localhost:8080
 go run ./cmd/validate   # 제도 JSON 검사
 ```
 
-다음은 **Phase 4 AI 계층** (시크릿 필터 → 구조화 → 설명).
-`/api/extract` · `/api/explain` · `/api/document` 는 경로와 에러 형식만 확정해 두고
-501 을 돌려주는 상태다.
+`ANTHROPIC_API_KEY` 가 없어도 **서버는 뜨고 판정은 정상 동작한다.**
+`/api/extract` 와 `/api/explain` 만 503 을 돌려주고, 프론트는 수동 입력으로 넘어간다.
 
+프론트는 [API.md](API.md) 만 보고 붙일 수 있다.
+
+다음은 **Phase 7 데모 안정화** (시나리오 캐싱 · 배포). Phase 6 문서 번역은 여유가 있으면.
 제도 데이터 확충(3건 → 30~50건)과 소득인정액 정밀화는
 **2026-09-09 전문가 자문** 이후 진행한다.

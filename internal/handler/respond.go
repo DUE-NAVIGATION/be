@@ -19,6 +19,10 @@ const (
 	CodeNotFound       = "NOT_FOUND"
 	CodeNotImplemented = "NOT_IMPLEMENTED"
 	CodeInternal       = "INTERNAL"
+	// AI 를 쓸 수 없다(키 없음) / 호출했지만 실패했다.
+	// 둘 다 프론트는 "수동 입력" 으로 폴백한다
+	CodeAIUnavailable = "AI_UNAVAILABLE"
+	CodeAIFailed      = "AI_FAILED"
 )
 
 // ErrorBody 는 모든 실패 응답의 형태다.

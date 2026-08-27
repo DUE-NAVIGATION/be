@@ -230,8 +230,10 @@ func TestErrorShape(t *testing.T) {
 			http.StatusBadRequest, CodeInvalidJSON},
 		{"없는 경로", http.MethodGet, "/api/없는것", "",
 			http.StatusNotFound, CodeNotFound},
-		{"아직 없는 기능", http.MethodPost, "/api/extract", `{"text":"안녕"}`,
+		{"아직 없는 기능", http.MethodPost, "/api/document", `{"imageBase64":"x"}`,
 			http.StatusNotImplemented, CodeNotImplemented},
+		{"AI 키 없음 — 구조화", http.MethodPost, "/api/extract", `{"text":"월세 살아요"}`,
+			http.StatusServiceUnavailable, CodeAIUnavailable},
 	}
 
 	for _, tt := range tests {

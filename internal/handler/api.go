@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/DUE-NAVIGATION/be/internal/ai"
 	"github.com/DUE-NAVIGATION/be/internal/income"
 	"github.com/DUE-NAVIGATION/be/internal/loader"
 )
@@ -15,6 +16,9 @@ import (
 type API struct {
 	Programs *loader.Store
 	Income   income.Calculator
+	// AI 는 없어도 서버가 뜬다. 없으면 해당 엔드포인트만 503 을 돌려주고,
+	// 프론트는 수동 입력으로 넘어간다. 판정은 AI 없이도 완전히 동작한다
+	AI *ai.Client
 }
 
 // Routes 는 전체 라우팅과 공통 처리를 조립해 돌려준다.
@@ -32,10 +36,10 @@ func (a *API) Routes() http.Handler {
 	mux.HandleFunc("GET /api/programs", a.programs)
 	mux.HandleFunc("POST /api/evaluate", a.evaluate)
 
-	// Phase 4 에서 붙는다. 지금은 프론트가 미리 붙여볼 수 있도록
-	// 경로와 에러 형식만 확정해 둔다.
-	mux.HandleFunc("POST /api/extract", notImplemented("자연어 구조화"))
-	mux.HandleFunc("POST /api/explain", notImplemented("결과 설명 생성"))
+	mux.HandleFunc("POST /api/extract", a.extract)
+	mux.HandleFunc("POST /api/explain", a.explain)
+
+	// Phase 6 에서 붙는다. 경로와 에러 형식만 확정해 둔다.
 	mux.HandleFunc("POST /api/document", notImplemented("문서 번역"))
 
 	// 등록되지 않은 경로도 같은 에러 형식으로 답한다.
@@ -53,6 +57,8 @@ func (a *API) health(w http.ResponseWriter, _ *http.Request) {
 		"storesUserData":   false,
 		"programCount":     a.Programs.Count(),
 		"medianIncomeYear": a.Income.Table.Year,
+		// 프론트가 대화형 입력을 띄울지 수동 입력 폼을 띄울지 판단한다
+		"aiEnabled": a.AI.Enabled(),
 	})
 }
 
