@@ -1,37 +1,66 @@
 // Command server 는 DUE 백엔드 HTTP 서버다.
 //
-// 지금은 /healthz 만 응답한다.
-// Phase 5 에서 internal/handler 의 실제 엔드포인트가 붙는다.
+// 시작할 때 기준중위소득 표와 제도 데이터를 메모리로 읽고, 그 뒤로는 파일을 보지 않는다.
+// 사용자 입력은 요청이 살아 있는 동안만 존재한다 (설계 원칙 2).
 package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/DUE-NAVIGATION/be/internal/handler"
+	"github.com/DUE-NAVIGATION/be/internal/income"
+	"github.com/DUE-NAVIGATION/be/internal/loader"
 )
 
 func main() {
-	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
-	}))
-	slog.SetDefault(logger)
+	})))
 
+	dataDir := env("DATA_DIR", "data")
 	addr := ":" + env("PORT", "8080")
 	origins := parseOrigins(env("CORS_ALLOWED_ORIGINS", "http://localhost:3000"))
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", healthz)
+	// ── 기준중위소득 표 ──────────────────────────────────────
+	// 이 표가 없으면 소득 판정 자체가 불가능하다. 없으면 뜨지 않는 게 맞다.
+	table, err := income.LoadTable(filepath.Join(dataDir, "median-income.json"))
+	if err != nil {
+		slog.Error("기준중위소득 표를 읽지 못했습니다", "err", err)
+		os.Exit(1)
+	}
+
+	// ── 제도 데이터 ─────────────────────────────────────────
+	// 제도는 하나가 깨져도 나머지로 동작해야 한다. 경고만 남기고 계속 간다.
+	store, err := loader.New(filepath.Join(dataDir, "programs"))
+	if err != nil {
+		slog.Error("제도 디렉터리를 읽지 못했습니다", "err", err)
+		os.Exit(1)
+	}
+	for _, p := range store.Problems() {
+		slog.Warn("제도를 건너뛰었습니다", "file", p.File, "reason", p.Reason)
+	}
+	if store.Count() == 0 {
+		slog.Warn("읽힌 제도가 없습니다. /api/evaluate 가 동작하지 않습니다",
+			"guide", "data/programs/README.md")
+	}
+
+	api := &handler.API{
+		Programs: store,
+		Income:   income.Calculator{Table: table},
+	}
 
 	srv := &http.Server{
 		Addr:              addr,
-		Handler:           withCORS(origins, mux),
+		Handler:           withCORS(origins, api.Routes()),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       20 * time.Second,
 		WriteTimeout:      30 * time.Second,
@@ -45,6 +74,8 @@ func main() {
 	go func() {
 		slog.Info("서버 시작",
 			"addr", addr,
+			"programs", store.Count(),
+			"medianIncomeYear", table.Year,
 			"demoMode", env("DEMO_MODE", "false"),
 			"corsAllowedOrigins", strings.Join(origins, ","),
 		)
@@ -62,17 +93,6 @@ func main() {
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		slog.Error("정상 종료 실패", "err", err)
 	}
-}
-
-func healthz(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(map[string]any{
-		"status":  "ok",
-		"service": "due-api",
-		// 설계 원칙 2 — 아무것도 저장하지 않는다
-		"storesUserData": false,
-	})
 }
 
 // ── CORS ────────────────────────────────────────────────────

@@ -370,12 +370,16 @@ func equal(a, b any) (eq bool, cmp bool) {
 	return false, false
 }
 
-// num 은 금액·나이를 사람이 읽는 형태로 만든다. 정수면 소수점을 붙이지 않는다.
+// num 은 금액·나이를 사람이 읽는 형태로 만든다.
+//
+// 정수면 소수점을 붙이지 않고, 소수는 첫째 자리에서 끊는다.
+// ★ 화면에 보이는 문구에만 쓴다. 판정 비교는 원래 정밀도로 한다 —
+// "19.05083047332741 은(는) 65 이하입니다" 같은 문장이 사용자에게 보이면 안 된다.
 func num(f float64) string {
 	if f == float64(int64(f)) {
 		return fmt.Sprintf("%d", int64(f))
 	}
-	return fmt.Sprintf("%g", f)
+	return fmt.Sprintf("%.1f", f)
 }
 
 // ── 판정 결과 생성기 ────────────────────────────────────────

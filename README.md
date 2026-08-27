@@ -96,15 +96,19 @@ data/
 
 ## 현재 상태
 
-**Phase 3 완료** — 규칙 엔진, 소득 계산, 예상 수령액·중복수급, 제도 로더·검증 CLI.
-제도 데이터 3건 (팀이 계속 추가).
+**Phase 5 완료** — 규칙 엔진, 소득 계산, 예상 수령액·중복수급, 제도 로더·검증 CLI,
+HTTP 계층(`/healthz` · `/api/evaluate` · `/api/programs`).
+
+프론트는 [API.md](API.md) 만 보고 붙일 수 있다.
 
 ```bash
+go run ./cmd/server     # http://localhost:8080
 go run ./cmd/validate   # 제도 JSON 검사
 ```
 
-제도 추가는 [data/programs/README.md](data/programs/README.md) 를 보고 JSON 한 건을 넣으면 된다.
-코드를 고칠 필요가 없다.
+다음은 **Phase 4 AI 계층** (시크릿 필터 → 구조화 → 설명).
+`/api/extract` · `/api/explain` · `/api/document` 는 경로와 에러 형식만 확정해 두고
+501 을 돌려주는 상태다.
 
-다음은 **Phase 4 AI 계층** (시크릿 필터 → 구조화 → 설명) 또는
-**Phase 5 HTTP 계층** (/api/evaluate 연결). 제도 데이터 확충은 계속 병렬로 진행한다.
+제도 데이터 확충(3건 → 30~50건)과 소득인정액 정밀화는
+**2026-09-09 전문가 자문** 이후 진행한다.

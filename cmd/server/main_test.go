@@ -56,7 +56,13 @@ func TestOriginAllowedIsExactMatch(t *testing.T) {
 
 func TestWithCORS(t *testing.T) {
 	allowed := []string{"http://localhost:3000"}
-	handler := withCORS(allowed, http.HandlerFunc(healthz))
+
+	// CORS 만 보는 테스트다. 안쪽 핸들러는 200 만 내면 된다.
+	// (실제 /healthz 응답 내용은 internal/handler 쪽 테스트가 지킨다)
+	ok := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	handler := withCORS(allowed, ok)
 
 	t.Run("허용된 오리진에는 헤더를 붙인다", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
@@ -123,31 +129,4 @@ func TestWithCORS(t *testing.T) {
 			t.Errorf("Allow-Credentials = %q, 설정하면 안 된다", got)
 		}
 	})
-}
-
-func TestHealthzSaysItStoresNothing(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
-	rec := httptest.NewRecorder()
-
-	healthz(rec, req)
-
-	if rec.Code != http.StatusOK {
-		t.Fatalf("code = %d, want 200", rec.Code)
-	}
-	body := rec.Body.String()
-	// 설계 원칙 2. 프론트의 BackendStatus 가 service 를 읽는다
-	for _, want := range []string{`"service":"due-api"`, `"storesUserData":false`} {
-		if !contains(body, want) {
-			t.Errorf("응답에 %s 가 없다: %s", want, body)
-		}
-	}
-}
-
-func contains(s, sub string) bool {
-	for i := 0; i+len(sub) <= len(s); i++ {
-		if s[i:i+len(sub)] == sub {
-			return true
-		}
-	}
-	return false
 }
