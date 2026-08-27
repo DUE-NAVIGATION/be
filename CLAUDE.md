@@ -104,4 +104,4 @@
 - [x] Phase 4 — AI 계층 (시크릿 필터 → 구조화 → 설명)
 - [x] Phase 5 — HTTP 계층 (extract/explain/document 는 Phase 4 에서)
 - [ ] Phase 6 — 문서 번역 (여유 시)
-- [ ] Phase 7 — 데모 안정화 ★ 반드시
+- [x] Phase 7 — 데모 안정화 (캐시·Docker·체크리스트). 배포·리허설은 발표 전

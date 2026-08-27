@@ -1,0 +1,21 @@
+# 빌드에 필요 없는 것들
+.git
+.gitignore
+.gitattributes
+*.md
+!data/programs/README.md
+
+# 로컬 산출물
+/server
+/validate
+*.exe
+*.out
+coverage.html
+
+# ★ 실제 키가 든 파일은 절대 이미지에 들어가면 안 된다
+.env
+.env.local
+
+# 에디터
+.idea
+.vscode

@@ -96,19 +96,32 @@ data/
 
 ## 현재 상태
 
-**Phase 4 완료** — 규칙 엔진, 소득 계산, 예상 수령액·중복수급, 제도 로더·검증 CLI,
-HTTP 계층, **AI 계층**(시크릿 필터 · 자연어 구조화 · 결과 설명).
+**Phase 7 완료** — 규칙 엔진, 소득 계산, 예상 수령액·중복수급, 제도 로더·검증 CLI,
+HTTP 계층, AI 계층, **데모 안정화**(응답 캐시 · Docker · 체크리스트).
+
+### ★ API 키 없이 전체 흐름이 돈다
 
 ```bash
-go run ./cmd/server     # http://localhost:8080
-go run ./cmd/validate   # 제도 JSON 검사
+DEMO_MODE=true go run ./cmd/server
 ```
 
-`ANTHROPIC_API_KEY` 가 없어도 **서버는 뜨고 판정은 정상 동작한다.**
-`/api/extract` 와 `/api/explain` 만 503 을 돌려주고, 프론트는 수동 입력으로 넘어간다.
+`/api/extract` 와 `/api/explain` 이 미리 뽑아둔 응답을 쓴다. `/api/evaluate` 는 원래
+AI 를 쓰지 않으므로, **외부 호출 0건**으로 데모가 완주된다.
+현장 와이파이가 죽어도, 키가 없어도 발표는 돌아간다 — [DEMO.md](DEMO.md) 참조.
+
+```bash
+go run ./cmd/validate   # 제도 JSON 검사
+docker build -t due-api .   # 빌드 중 제도 검증 자동 실행 · 최종 17MB
+```
 
 프론트는 [API.md](API.md) 만 보고 붙일 수 있다.
 
-다음은 **Phase 7 데모 안정화** (시나리오 캐싱 · 배포). Phase 6 문서 번역은 여유가 있으면.
-제도 데이터 확충(3건 → 30~50건)과 소득인정액 정밀화는
-**2026-09-09 전문가 자문** 이후 진행한다.
+### 남은 것
+
+Phase 6 문서 번역은 여유가 있으면. 아래 두 가지는
+**2026-09-09 전문가 자문** 답변이 있어야 정할 수 있어 비워 둔 상태다.
+
+- 소득인정액 정밀화 — 재산의 소득환산·근로소득공제 (`median-income.json` 의 `propertyConversion` 이 `null`)
+- 중복수급 관계 데이터 (`data/relations.json` 없음. 엔진은 완성)
+
+제도 데이터 확충(3건 → 30~50건)도 자문에서 우선순위를 받아 진행한다.

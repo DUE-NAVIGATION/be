@@ -58,14 +58,38 @@ func main() {
 	// ── AI 게이트웨이 ───────────────────────────────────────
 	// ★ 키가 없어도 서버는 뜬다. 판정은 AI 없이 완전히 동작하고,
 	// 대화형 입력만 막힌다. 데모 중 키가 만료돼도 결과 화면은 살아 있어야 한다.
+	demoMode := env("DEMO_MODE", "false") == "true"
+
+	// 데모 모드면 미리 뽑아둔 응답을 쓴다.
+	// ★ 이게 있으면 API 키도 네트워크도 없이 데모가 완주된다.
+	var demoCache ai.Cache
+	if demoMode {
+		fc, err := ai.LoadCache(filepath.Join(dataDir, "demo-cache.json"))
+		if err != nil {
+			// 뜨지 못할 이유는 아니지만, 발표 당일에야 알면 늦는다. 크게 남긴다
+			slog.Error("DEMO_MODE 인데 데모 캐시를 쓸 수 없습니다", "err", err)
+		} else {
+			demoCache = fc
+			for _, op := range fc.Ops() {
+				slog.Info("데모 캐시", "op", op,
+					"항목", fc.Count(op), "기본값", fc.HasDefault(op))
+			}
+		}
+	}
+
 	aiClient := ai.New(ai.Config{
 		APIKey:   os.Getenv("ANTHROPIC_API_KEY"), // ★ 코드에 넣지 않는다
 		Model:    env("ANTHROPIC_MODEL", ""),
 		Timeout:  envDuration("AI_TIMEOUT_SECONDS", 8*time.Second),
-		DemoMode: env("DEMO_MODE", "false") == "true",
+		DemoMode: demoMode,
+		Cache:    demoCache,
 	})
-	if !aiClient.Enabled() {
+	switch {
+	case demoCache != nil:
+		slog.Info("데모 모드입니다. AI 응답은 캐시에서 나갑니다 (API 호출 없음)")
+	case !aiClient.Enabled():
 		slog.Warn("ANTHROPIC_API_KEY 가 없습니다. /api/extract 와 /api/explain 은 503 을 돌려줍니다",
+			"대안", "DEMO_MODE=true 로 켜면 캐시로 동작합니다",
 			"영향", "판정(/api/evaluate)은 정상 동작합니다")
 	}
 
@@ -94,7 +118,7 @@ func main() {
 			"programs", store.Count(),
 			"aiEnabled", aiClient.Enabled(),
 			"medianIncomeYear", table.Year,
-			"demoMode", env("DEMO_MODE", "false"),
+			"demoMode", demoMode,
 			"corsAllowedOrigins", strings.Join(origins, ","),
 		)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
