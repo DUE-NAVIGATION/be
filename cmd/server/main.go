@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -21,6 +22,7 @@ import (
 	"github.com/DUE-NAVIGATION/be/internal/handler"
 	"github.com/DUE-NAVIGATION/be/internal/income"
 	"github.com/DUE-NAVIGATION/be/internal/loader"
+	"github.com/DUE-NAVIGATION/be/internal/store"
 )
 
 func main() {
@@ -42,9 +44,16 @@ func main() {
 
 	// ── 제도 데이터 ─────────────────────────────────────────
 	// 제도는 하나가 깨져도 나머지로 동작해야 한다. 경고만 남기고 계속 간다.
-	store, err := loader.New(filepath.Join(dataDir, "programs"))
+	//
+	// 읽는 곳은 둘 중 하나다. 판정 결과는 어느 쪽이든 같다.
+	//   json   (기본) data/programs/*.json 을 직접 읽는다
+	//   sqlite        cmd/seed 가 만든 DB 를 읽는다
+	//
+	// ★ 기본값이 json 인 이유: 데모 중 DB 파일이 없거나 잠겨도 서비스가 뜬다.
+	// DB 를 쓰다 문제가 생기면 PROGRAM_SOURCE=json 으로 즉시 되돌린다.
+	store, err := openProgramSource(dataDir)
 	if err != nil {
-		slog.Error("제도 디렉터리를 읽지 못했습니다", "err", err)
+		slog.Error("제도 데이터를 읽지 못했습니다", "err", err)
 		os.Exit(1)
 	}
 	for _, p := range store.Problems() {
@@ -173,6 +182,28 @@ func withCORS(allowed []string, next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+// openProgramSource 는 PROGRAM_SOURCE 에 따라 제도 저장소를 연다.
+//
+// 모르는 값이 오면 조용히 기본값으로 넘어가지 않고 멈춘다 — 오타 하나로
+// "DB 를 쓴다고 생각했는데 JSON 을 읽고 있었다" 가 되면 원인을 찾기 어렵다.
+func openProgramSource(dataDir string) (handler.ProgramSource, error) {
+	switch src := env("PROGRAM_SOURCE", "json"); src {
+	case "json":
+		slog.Info("제도 저장소", "source", "json",
+			"dir", filepath.Join(dataDir, "programs"))
+		return loader.New(filepath.Join(dataDir, "programs"))
+
+	case "sqlite":
+		path := env("PROGRAM_DB", filepath.Join(dataDir, "due.db"))
+		slog.Info("제도 저장소", "source", "sqlite", "db", path)
+		return store.New(path)
+
+	default:
+		return nil, fmt.Errorf(
+			"PROGRAM_SOURCE 는 json 또는 sqlite 여야 합니다 (받은 값: %q)", src)
+	}
 }
 
 // parseOrigins 는 쉼표로 구분된 오리진 목록을 자른다. 빈 항목은 버린다.

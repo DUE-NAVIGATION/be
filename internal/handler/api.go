@@ -6,6 +6,7 @@ import (
 	"github.com/DUE-NAVIGATION/be/internal/ai"
 	"github.com/DUE-NAVIGATION/be/internal/income"
 	"github.com/DUE-NAVIGATION/be/internal/loader"
+	"github.com/DUE-NAVIGATION/be/internal/model"
 )
 
 // API 는 HTTP 계층이 판정에 쓰는 것들을 들고 있다.
@@ -14,11 +15,24 @@ import (
 // Income 은 기준중위소득 표를 들고 있는 값이다.
 // 사용자 입력은 요청이 살아 있는 동안만 스택 위에 존재한다 (설계 원칙 2).
 type API struct {
-	Programs *loader.Store
+	Programs ProgramSource
 	Income   income.Calculator
 	// AI 는 없어도 서버가 뜬다. 없으면 해당 엔드포인트만 503 을 돌려주고,
 	// 프론트는 수동 입력으로 넘어간다. 판정은 AI 없이도 완전히 동작한다
 	AI *ai.Client
+}
+
+// ProgramSource 는 제도 데이터를 어디서 읽든 handler 가 기대하는 모습이다.
+//
+// loader.Store(JSON 파일)와 store.Store(SQLite)가 둘 다 이걸 만족한다.
+// ★ 판정 결과는 어느 쪽을 쓰든 같아야 한다 — 저장소는 읽는 곳만 다를 뿐,
+// 규칙 엔진에 들어가는 model.Program 은 동일하다.
+type ProgramSource interface {
+	Programs() []model.Program
+	Relations() []model.Relation
+	// 읽다가 건너뛴 것. 조용히 빠지면 아무도 모른다
+	Problems() []loader.Problem
+	Count() int
 }
 
 // Routes 는 전체 라우팅과 공통 처리를 조립해 돌려준다.

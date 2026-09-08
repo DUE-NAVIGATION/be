@@ -21,6 +21,12 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
 # ★ 깨진 제도를 배포한 뒤 발표장에서 알게 되면 늦는다.
 RUN CGO_ENABLED=0 go run ./cmd/validate
 
+# 제도 DB 를 이미지 안에 미리 만들어 둔다.
+# PROGRAM_SOURCE=sqlite 로 띄우면 이걸 읽고, 기본값(json)이면 쓰이지 않는다.
+# ★ 런타임에 씨딩하지 않는 이유: distroless 에는 셸이 없고, 무엇보다
+#   컨테이너가 뜨는 시점에 실패할 수 있는 일을 늘리지 않는다
+RUN CGO_ENABLED=0 go run ./cmd/seed -data ./data -db ./data/due.db
+
 # ── 실행 ────────────────────────────────────────────────────
 # distroless: 셸도 패키지 관리자도 없다. 공격 표면이 최소가 된다.
 FROM gcr.io/distroless/static-debian12:nonroot
@@ -28,7 +34,7 @@ FROM gcr.io/distroless/static-debian12:nonroot
 WORKDIR /app
 
 COPY --from=build /out/server /app/server
-# 제도 JSON·기준중위소득 표·데모 캐시. 읽기 전용으로만 쓴다
+# 제도 JSON·기준중위소득 표·데모 캐시·제도 DB. 읽기 전용으로만 쓴다
 COPY --from=build /src/data /app/data
 
 # ★ root 로 돌지 않는다
@@ -36,5 +42,6 @@ USER nonroot:nonroot
 
 EXPOSE 8080
 
-# 사용자 입력을 디스크에 쓰지 않으므로 볼륨이 필요 없다.
+# ★ 볼륨이 없다. 사용자 입력을 디스크에 쓰지 않기 때문이다 (설계 원칙 2).
+#   제도 DB 도 읽기 전용이다 — 내용을 바꾸려면 JSON 을 고치고 이미지를 다시 만든다.
 ENTRYPOINT ["/app/server"]
