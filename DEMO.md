@@ -64,6 +64,15 @@ msg="데모 캐시: 정확히 맞는 항목이 없어 기본 항목을 씁니다
 ### 당일 아침
 
 - [ ] 서버 起動 후 `curl http://localhost:8080/healthz` → `"status":"ok"`
+- [ ] ★ **포트가 밀리지 않았는지.** 3000 이 다른 프로세스에 잡히면 Next 가 3001 로
+      뜨는데, `CORS_ALLOWED_ORIGINS` 기본값은 `http://localhost:3000` **하나뿐**이라
+      정확 일치에서 걸려 **모든 요청이 막힌다.** 화면에는 "백엔드 없음"만 보여
+      원인을 찾기 어렵다. 실제로 개발 중에 당했다.
+      ```bash
+      # 프론트가 뜬 포트를 확인한 뒤 그 오리진을 넣어 띄운다
+      CORS_ALLOWED_ORIGINS="http://localhost:3000,http://localhost:3001" go run ./cmd/server
+      ```
+      프론트의 `.env.local` 의 `NEXT_PUBLIC_API_BASE_URL` 도 서버 `PORT` 와 맞출 것
 - [ ] 시작 로그에 **"데모 모드입니다"** 가 있는지
 - [ ] `programCount` 가 기대한 수인지
 - [ ] 프론트에서 결과 화면까지 한 번 완주
