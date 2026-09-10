@@ -12,13 +12,32 @@ const (
 	StatusUnknown ConditionStatus = "UNKNOWN"
 )
 
+// 조건이 속한 그룹. 화면이 판정을 어떻게 읽어야 하는지가 여기서 갈린다.
+//
+// ★ None 은 배제 조건이라 뜻이 뒤집힌다.
+// "재직 중이 아닐 것" 조건에서 엔진의 PASS 는 "재직 중이다 = 탈락" 이고,
+// FAIL 은 "재직 중이 아니다 = 통과" 다. 그룹을 알려주지 않으면 화면이
+// 이용자에게 정반대를 보여준다. 실제로 그 버그가 있었다.
+const (
+	GroupAll  = "all"
+	GroupAny  = "any"
+	GroupNone = "none"
+	// 시설의 관할 지역. 뜻이 뒤집히지 않는 일반 조건이다
+	GroupCoverage = "coverage"
+)
+
 // ConditionResult 는 조건 하나의 판정 근거다.
 //
 // ★ 설명 가능성의 핵심 — "왜 해당/미해당인지" 를 조건 단위로 보여주기 위해
 // 모든 조건에 대해 반드시 남긴다.
 type ConditionResult struct {
-	Condition Condition       `json:"condition"`
-	Status    ConditionStatus `json:"status"`
+	Condition Condition `json:"condition"`
+	// 이 조건이 속한 그룹 (all / any / none / coverage).
+	// ★ 화면은 이 값을 보고 none 그룹의 표시를 뒤집는다
+	Group string `json:"group"`
+	// ★ 엔진 관점의 판정이다. 뒤집지 않는다 — 규칙 엔진이 실제로 무엇을
+	// 보았는지가 원자료로 남아야 디버깅이 된다
+	Status ConditionStatus `json:"status"`
 	// 사용자 입력의 실제 값. 화면의 "입력: 29세". 모르면 nil
 	Actual any `json:"actual,omitempty"`
 	// 사람 말 사유

@@ -36,9 +36,9 @@ type evaluated struct {
 // 우선순위: 명시적 탈락(INELIGIBLE)이 확인필요(NEEDS_INFO)보다 앞선다.
 // 나이가 확실히 초과라면 소득을 몰라도 그 제도는 해당되지 않는다.
 func Evaluate(p model.Program, ctx model.UserContext) model.MatchResult {
-	all := evaluateGroup(p.Eligibility.All, ctx)
-	any := evaluateGroup(p.Eligibility.Any, ctx)
-	none := evaluateGroup(p.Eligibility.None, ctx)
+	all := evaluateGroup(model.GroupAll, p.Eligibility.All, ctx)
+	any := evaluateGroup(model.GroupAny, p.Eligibility.Any, ctx)
+	none := evaluateGroup(model.GroupNone, p.Eligibility.None, ctx)
 
 	evals := make([]evaluated, 0, len(all)+len(any)+len(none))
 	evals = append(evals, all...)
@@ -109,12 +109,34 @@ func decide(e model.Eligibility, all, any, none []evaluated) model.MatchStatus {
 	return model.MatchEligible
 }
 
-func evaluateGroup(conds []model.Condition, ctx model.UserContext) []evaluated {
+func evaluateGroup(group string, conds []model.Condition, ctx model.UserContext) []evaluated {
 	out := make([]evaluated, 0, len(conds))
 	for _, c := range conds {
-		out = append(out, evaluateCondition(c, ctx))
+		e := evaluateCondition(c, ctx)
+		e.res.Group = group
+
+		// ★ 배제 조건은 뜻이 뒤집힌다. 사유 문구도 이용자 관점으로 다시 쓴다 —
+		// 화면 표시만 뒤집고 문구를 그대로 두면 "통과인데 사유는 탈락 이유" 가 된다
+		if group == model.GroupNone {
+			e.res.Reason = excludeReason(e.res.Status, e.res.Reason)
+		}
+		out = append(out, e)
 	}
 	return out
+}
+
+// excludeReason 은 배제 조건의 사유를 이용자가 읽는 말로 바꾼다.
+//
+//	엔진 PASS = 배제가 성립했다 = 이용자에게는 탈락 사유
+//	엔진 FAIL = 배제가 성립하지 않았다 = 이용자에게는 통과
+func excludeReason(status model.ConditionStatus, raw string) string {
+	switch status {
+	case model.StatusPass:
+		return "여기에 해당해 이용할 수 없습니다 — " + raw
+	case model.StatusFail:
+		return "여기에 해당하지 않습니다"
+	}
+	return raw
 }
 
 func count(es []evaluated, s model.ConditionStatus) int {

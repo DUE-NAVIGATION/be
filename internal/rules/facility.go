@@ -23,9 +23,9 @@ import (
 func EvaluateFacility(f model.Facility, ctx model.UserContext) model.FacilityMatch {
 	coverage := coverageCondition(f, ctx)
 
-	all := evaluateGroup(f.Eligibility.All, ctx)
-	any := evaluateGroup(f.Eligibility.Any, ctx)
-	none := evaluateGroup(f.Eligibility.None, ctx)
+	all := evaluateGroup(model.GroupAll, f.Eligibility.All, ctx)
+	any := evaluateGroup(model.GroupAny, f.Eligibility.Any, ctx)
+	none := evaluateGroup(model.GroupNone, f.Eligibility.None, ctx)
 
 	evals := make([]evaluated, 0, 1+len(all)+len(any)+len(none))
 	evals = append(evals, coverage)
@@ -87,6 +87,7 @@ func coverageCondition(f model.Facility, ctx model.UserContext) evaluated {
 			Op:    model.OpEq,
 			Label: f.Coverage.Label(),
 		},
+		Group:  model.GroupCoverage,
 		Status: status,
 		Actual: actual,
 		Reason: coverageReason(f.Coverage, status, actual),
