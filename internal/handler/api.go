@@ -16,7 +16,9 @@ import (
 // 사용자 입력은 요청이 살아 있는 동안만 스택 위에 존재한다 (설계 원칙 2).
 type API struct {
 	Programs ProgramSource
-	Income   income.Calculator
+	// 시설. 없어도 서버는 뜬다 — 제도 판정은 시설과 무관하게 동작한다
+	Facilities *loader.FacilityStore
+	Income     income.Calculator
 	// AI 는 없어도 서버가 뜬다. 없으면 해당 엔드포인트만 503 을 돌려주고,
 	// 프론트는 수동 입력으로 넘어간다. 판정은 AI 없이도 완전히 동작한다
 	AI *ai.Client
@@ -48,6 +50,7 @@ func (a *API) Routes() http.Handler {
 
 	mux.HandleFunc("GET /healthz", a.health)
 	mux.HandleFunc("GET /api/programs", a.programs)
+	mux.HandleFunc("GET /api/facilities", a.facilities)
 	mux.HandleFunc("POST /api/evaluate", a.evaluate)
 
 	mux.HandleFunc("POST /api/extract", a.extract)
@@ -70,6 +73,7 @@ func (a *API) health(w http.ResponseWriter, _ *http.Request) {
 		// 설계 원칙 2 — 아무것도 저장하지 않는다
 		"storesUserData":   false,
 		"programCount":     a.Programs.Count(),
+		"facilityCount":    a.facilityCount(),
 		"medianIncomeYear": a.Income.Table.Year,
 		// 프론트가 대화형 입력을 띄울지 수동 입력 폼을 띄울지 판단한다
 		"aiEnabled": a.AI.Enabled(),
@@ -86,4 +90,13 @@ func notImplemented(what string) http.HandlerFunc {
 		writeError(w, http.StatusNotImplemented, CodeNotImplemented,
 			what+" 기능은 아직 준비 중입니다 (Phase 4)")
 	}
+}
+
+// facilityCount 는 시설 저장소가 없어도 안전하게 0 을 돌려준다.
+// 시설 데이터를 아직 안 넣은 상태에서도 /healthz 는 떠야 한다.
+func (a *API) facilityCount() int {
+	if a.Facilities == nil {
+		return 0
+	}
+	return a.Facilities.Count()
 }

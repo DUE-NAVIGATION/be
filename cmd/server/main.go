@@ -64,6 +64,18 @@ func main() {
 			"guide", "data/programs/README.md")
 	}
 
+	// ── 시설 데이터 ─────────────────────────────────────────
+	// ★ 없어도 서버는 뜬다. 제도 판정은 시설과 무관하게 동작하고,
+	// 시설 데이터를 아직 안 넣은 상태에서도 데모가 막히면 안 된다.
+	facilities, err := loader.NewFacilities(filepath.Join(dataDir, "facilities"))
+	if err != nil {
+		slog.Error("시설 디렉터리를 읽지 못했습니다", "err", err)
+		os.Exit(1)
+	}
+	for _, p := range facilities.Problems() {
+		slog.Warn("시설을 건너뛰었습니다", "file", p.File, "reason", p.Reason)
+	}
+
 	// ── AI 게이트웨이 ───────────────────────────────────────
 	// ★ 키가 없어도 서버는 뜬다. 판정은 AI 없이 완전히 동작하고,
 	// 대화형 입력만 막힌다. 데모 중 키가 만료돼도 결과 화면은 살아 있어야 한다.
@@ -103,9 +115,10 @@ func main() {
 	}
 
 	api := &handler.API{
-		Programs: store,
-		Income:   income.Calculator{Table: table},
-		AI:       aiClient,
+		Programs:   store,
+		Facilities: facilities,
+		Income:     income.Calculator{Table: table},
+		AI:         aiClient,
 	}
 
 	srv := &http.Server{
@@ -125,6 +138,7 @@ func main() {
 		slog.Info("서버 시작",
 			"addr", addr,
 			"programs", store.Count(),
+			"facilities", facilities.Count(),
 			"aiEnabled", aiClient.Enabled(),
 			"medianIncomeYear", table.Year,
 			"demoMode", demoMode,

@@ -1,0 +1,160 @@
+[
+  {
+    "id": "hotline-129",
+    "name": "보건복지상담센터",
+    "type": "HOTLINE",
+    "summary": "어디에 물어야 할지 모를 때 가장 먼저 걸어볼 번호입니다. 복지 전반을 상담하고 맞는 제도와 기관을 연결해 줍니다.",
+
+    "coverage": { "scope": "NATIONWIDE" },
+
+    "location": { "sido": "", "sigungu": "", "roadAddress": "" },
+
+    "contact": {
+      "phone": "129",
+      "website": "https://www.129.go.kr",
+      "hours": "평일 09:00~18:00 (야간·휴일은 응급 상담만)"
+    },
+
+    "services": ["복지제도 안내", "긴급복지 상담", "기관 연계"],
+    "fee": "무료 (국번없이 129)",
+
+    "authority": "보건복지부",
+    "source": {
+      "url": "https://www.129.go.kr",
+      "revisedAt": "2026-09-10",
+      "agency": "보건복지부 보건복지상담센터",
+      "note": "국번없이 129. 복지로·보건복지부가 공식 안내하는 대표 상담번호다. 야간·휴일 운영 범위는 상담 유형에 따라 다르므로 '평일 기준'으로만 적었다."
+    }
+  },
+
+  {
+    "id": "hotline-109",
+    "name": "자살예방 상담전화",
+    "type": "HOTLINE",
+    "summary": "힘든 마음을 24시간 언제든 이야기할 수 있습니다. 전문 상담원이 받습니다.",
+
+    "coverage": { "scope": "NATIONWIDE" },
+
+    "location": { "sido": "", "sigungu": "", "roadAddress": "" },
+
+    "contact": {
+      "phone": "109",
+      "website": "https://www.129.go.kr/109",
+      "hours": "24시간 연중무휴",
+      "always": true
+    },
+
+    "services": ["자살예방 상담", "정신건강 위기 상담"],
+    "fee": "무료 (국번없이 109)",
+
+    "authority": "보건복지부",
+    "source": {
+      "url": "https://www.129.go.kr/109",
+      "revisedAt": "2026-09-10",
+      "agency": "보건복지부",
+      "note": "2024-01-01 부로 자살예방 상담전화가 109 로 통합되었다. ★ 이전 번호였던 1393 과 129 의 자살예방 상담은 이 번호로 합쳐졌으므로 1393 을 안내하지 말 것."
+    }
+  },
+
+  {
+    "id": "hotline-1366",
+    "name": "여성긴급전화 1366",
+    "type": "HOTLINE",
+    "summary": "가정폭력·성폭력·교제폭력 등으로 위험하거나 힘들 때 24시간 상담하고, 필요하면 보호시설로 연계합니다.",
+
+    "coverage": { "scope": "NATIONWIDE" },
+
+    "location": { "sido": "", "sigungu": "", "roadAddress": "" },
+
+    "contact": {
+      "phone": "1366",
+      "hours": "24시간 연중무휴",
+      "always": true
+    },
+
+    "services": ["폭력 피해 상담", "긴급 보호", "보호시설 연계", "법률·의료 지원 연계"],
+    "fee": "무료 (국번없이 1366)",
+
+    "authority": "여성가족부",
+    "source": {
+      "url": "https://www.women1366.kr",
+      "revisedAt": "2026-09-10",
+      "agency": "여성가족부",
+      "note": "시도별 1366 센터가 따로 있으나 국번없이 1366 으로 걸면 해당 지역 센터로 연결된다. 그래서 관할을 NATIONWIDE 로 둔다."
+    }
+  },
+
+  {
+    "id": "hotline-1388",
+    "name": "청소년전화 1388",
+    "type": "HOTLINE",
+    "summary": "9세~24세 청소년과 보호자가 학업·가출·폭력·진로 문제를 24시간 상담할 수 있습니다.",
+
+    "coverage": { "scope": "NATIONWIDE" },
+
+    "location": { "sido": "", "sigungu": "", "roadAddress": "" },
+
+    "contact": {
+      "phone": "1388",
+      "hours": "24시간 연중무휴",
+      "always": true
+    },
+
+    "services": ["청소년 상담", "가출·위기 청소년 지원", "학교밖청소년 지원 연계"],
+    "fee": "무료 (국번없이 1388)",
+
+    "eligibility": {
+      "any": [
+        {
+          "field": "age",
+          "op": "between",
+          "value": [9, 24],
+          "label": "만 9~24세 청소년 본인",
+          "note": "보호자도 상담할 수 있으므로 any 로 둔다. 나이가 벗어나도 미해당으로 단정하지 않는다."
+        },
+        {
+          "field": "childrenAges",
+          "op": "exists",
+          "value": null,
+          "label": "청소년 자녀를 둔 보호자"
+        }
+      ]
+    },
+
+    "authority": "여성가족부",
+    "source": {
+      "url": "https://www.1388.go.kr",
+      "revisedAt": "2026-09-10",
+      "agency": "여성가족부 한국청소년상담복지개발원",
+      "note": "★ 실제 요건은 '9~24세 청소년 또는 그 보호자'다. 보호자 여부를 UserContext 로 정확히 표현할 수 없어 childrenAges 존재 여부로 근사했다. 자녀 나이가 청소년이 아니어도 통과할 수 있다."
+    }
+  },
+
+  {
+    "id": "hotline-1577-0199",
+    "name": "정신건강상담전화",
+    "type": "HOTLINE",
+    "summary": "우울·불안·불면 등 정신건강 문제를 24시간 상담하고 가까운 정신건강복지센터로 연결해 줍니다.",
+
+    "coverage": { "scope": "NATIONWIDE" },
+
+    "location": { "sido": "", "sigungu": "", "roadAddress": "" },
+
+    "contact": {
+      "phone": "1577-0199",
+      "hours": "24시간 연중무휴",
+      "always": true
+    },
+
+    "services": ["정신건강 상담", "정신건강복지센터 연계", "위기 개입"],
+    "fee": "무료 (통화료 별도)",
+
+    "authority": "보건복지부",
+    "source": {
+      "url": "https://www.mohw.go.kr",
+      "revisedAt": "2026-09-10",
+      "agency": "보건복지부",
+      "note": "지역 정신건강복지센터로 자동 연결되는 대표번호다. 자살 관련 상담은 109 가 전담하므로 그쪽을 함께 안내한다."
+    }
+  }
+]

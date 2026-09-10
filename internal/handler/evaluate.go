@@ -19,6 +19,10 @@ type EvaluateRequest struct {
 type EvaluateResponse struct {
 	Results []model.MatchResult `json:"results"`
 	Summary model.Summary       `json:"summary"`
+	// ★ 이용할 수 있는 시설. 이 서비스의 결말이다 —
+	// "얼마 받을 수 있나" 보다 "어디로 가면 되나" 가 먼저 필요한 사람이 많다
+	Facilities      []model.FacilityMatch `json:"facilities"`
+	FacilitySummary model.FacilitySummary `json:"facilitySummary"`
 	// 계산된 중위소득 대비 비율(%). 계산할 수 없었으면 null
 	IncomePct *float64 `json:"incomePct"`
 	// 기준중위소득 표의 기준연도. 화면에 "2026년 기준" 으로 표시한다
@@ -32,7 +36,7 @@ type EvaluateResponse struct {
 // 이 핸들러가 이 서버의 본체다. 순서가 중요하다.
 //
 //  1. 소득 비율 계산 → 2) 제도별 판정 → 3) 금액 산정
-//     → 4) 중복수급 정리 → 5) 요약
+//     → 4) 중복수급 정리 → 5) 요약 → 6) 시설 판정
 //
 // 3번이 4번보다 먼저다. 금액을 모르면 "어느 조합이 최대인가" 를 정할 수 없다.
 func (a *API) evaluate(w http.ResponseWriter, r *http.Request) {
@@ -71,9 +75,15 @@ func (a *API) evaluate(w http.ResponseWriter, r *http.Request) {
 
 	sortResults(resolved.Results)
 
+	// 6) 갈 수 있는 곳. 제도와 같은 ctx 로 판정한다 —
+	//    소득 비율이 채워진 뒤라 시설의 소득 조건도 함께 걸러진다
+	facilities, facilitySummary := a.evaluateFacilities(ctx)
+
 	writeJSON(w, http.StatusOK, EvaluateResponse{
 		Results:          resolved.Results,
 		Summary:          summary,
+		Facilities:       facilities,
+		FacilitySummary:  facilitySummary,
 		IncomePct:        ctx.HouseholdIncomePct,
 		MedianIncomeYear: a.Income.Table.Year,
 		Disclaimer:       model.Disclaimer,

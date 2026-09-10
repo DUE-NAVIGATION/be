@@ -46,6 +46,10 @@ type UserContext struct {
 	ReceivingPrograms []string `json:"receivingPrograms,omitempty"`
 	// 거주 지역 (시도 단위)
 	Region *string `json:"region,omitempty"`
+	// 거주 시군구 (예: "관악구"). ★ 시설 판정의 1순위 조건이다 —
+	// 시설은 물리적 장소라 관할을 벗어나면 안내가 헛걸음이 된다.
+	// 모르면 nil 이고, 그때는 관할이 FAIL 이 아니라 UNKNOWN 이 된다
+	District *string `json:"district,omitempty"`
 
 	// ★ 파생값 — income 엔진이 계산해 채운다. 사용자가 직접 입력하지 않는다.
 	// 중위소득 대비 비율(%). 대부분의 제도 자격이 이 값 하나로 갈린다.

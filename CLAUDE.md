@@ -2,9 +2,17 @@
 
 ## 프로젝트 정체
 
-사용자가 자기 상황을 자연어로 말하면 받을 수 있는 복지제도를 찾아주는 서비스의
-백엔드. Go로 작성한다. 프론트(Next.js)는 다른 팀원이 담당하므로,
-이 프로젝트는 REST API만 제공한다.
+사용자가 자기 상황을 자연어로 말하면 **이용할 수 있는 시설로 연결해 주고**,
+받을 수 있는 복지제도를 함께 알려주는 서비스의 백엔드.
+
+**2026-09-10 방향 전환** (사회복지학과 교수 자문) — 무게중심이 "얼마 받을 수 있나"
+에서 **"어디로 가면 되나"** 로 옮겨졌다. 제도를 알아도 어디에 물어야 할지 모르면
+결국 도달하지 못한다. 시설(`internal/model/facility.go`)이 결과 화면의 주인공이고,
+제도는 그 아래 부가 정보로 붙는다. 판정 엔진은 둘이 공유한다.
+
+Go로 작성하며 REST API만 제공한다. 프론트(Next.js)는 `FE` 저장소에 있고
+**2026-09-08 부터 같은 사람이 맡는다** — 계약(`internal/model` ↔ `FE/types`)을
+한쪽만 고치면 런타임에 깨지므로 반드시 같이 고친다.
 
 이름의 뜻: due = "마땅히 지급되어야 할". "이건 원래 당신 것입니다."
 
@@ -60,7 +68,7 @@
 
     be/
       cmd/server/main.go        진입점 (라우팅 · CORS · 그레이스풀 셧다운)
-      cmd/validate/main.go      제도 JSON 검증 CLI
+      cmd/validate/main.go      제도·시설 JSON 검증 CLI
       cmd/seed/main.go          제도 JSON → SQLite 씨딩 CLI
       internal/
         rules/                  규칙 엔진 (순수 함수) ★ 핵심
@@ -68,10 +76,11 @@
         ai/                     Claude 호출, 스키마 검증, 시크릿 필터
         handler/                HTTP 핸들러
         model/                  공용 타입
-        loader/                 제도 JSON 로더
+        loader/                 제도·시설 JSON 로더
         store/                  제도 SQLite 저장소 (loader 와 같은 인터페이스)
       data/
         programs/*.json         제도 정의 ★ 원본
+        facilities/*.json       시설 정의 (파일 하나에 배열로 여러 건)
         median-income.json      기준중위소득 표
         due.db                  제도 DB (생성물. 커밋하지 않는다)
       go.mod
@@ -79,10 +88,12 @@
 ## API 계약 (프론트와 합의된 인터페이스)
 
     POST /api/extract     { text }         → { extracted, confidence, followUpQuestions }
-    POST /api/evaluate    { context }      → { results[], summary }
+    POST /api/evaluate    { context }      → { results[], summary,
+                                              facilities[], facilitySummary }
     POST /api/explain     { results }      → { explanation }
     POST /api/document    { imageBase64 }  → { summary, todos[], deadline, ... }
     GET  /api/programs                     → { programs[] }
+    GET  /api/facilities                   → { facilities[], problems[] }
     GET  /healthz                          → { status, service, storesUserData }
 
 - ★ 헬스체크만 `/api` 접두어가 없다. 프론트 `lib/api.ts` 의 `getHealth` 와 맞춰야 한다.
@@ -109,7 +120,9 @@
 - ORM·마이그레이션 도구 도입
 - GraphQL
 - 인증·세션·사용자 관리
-- 제도 데이터를 Go 코드에 하드코딩 (반드시 JSON)
+- 제도·시설 데이터를 Go 코드에 하드코딩 (반드시 JSON)
+- ★ 시설 전화번호·주소를 지어내기. 확인되지 않으면 비워 둔다 —
+  틀린 번호로 전화하게 만드는 것은 안내하지 않는 것보다 나쁘다
 - API 키를 코드에 삽입 (환경변수만)
 
 ## 진행 현황
@@ -120,5 +133,8 @@
 - [x] Phase 3 — 제도 로더 + 검증 CLI (제도 데이터는 3건. 팀이 계속 추가)
 - [x] Phase 4 — AI 계층 (시크릿 필터 → 구조화 → 설명)
 - [x] Phase 5 — HTTP 계층 (extract/explain/document 는 Phase 4 에서)
+- [x] Phase 8 — 시설 연결 (모델·관할 판정·로더·검증·API). 2026-09-10 방향 전환
+- [ ] Phase 8-2 — 시설 화면 (전화 걸기·준비물·문의 스크립트) ★ 다음
+- [ ] Phase 8-3 — 공공데이터 → 시설 JSON 임포터, 실제 지역 데이터
 - [ ] Phase 6 — 문서 번역 (여유 시)
 - [x] Phase 7 — 데모 안정화 (캐시·Docker·체크리스트). 배포·리허설은 발표 전

@@ -22,6 +22,7 @@ const (
 	FieldBasicLivelihood    = "basicLivelihoodType"
 	FieldReceivingPrograms  = "receivingPrograms"
 	FieldRegion             = "region"
+	FieldDistrict           = "district"
 	FieldHouseholdIncomePct = "householdIncomePct"
 )
 
@@ -45,6 +46,7 @@ func KnownFields() []string {
 		FieldIsSingleParent,
 		FieldMonthlyRent,
 		FieldReceivingPrograms,
+		FieldDistrict,
 		FieldRegion,
 	}
 }
@@ -165,6 +167,12 @@ func Lookup(ctx UserContext, field string) (value any, known bool, exists bool) 
 			return nil, false, true
 		}
 		return append([]string(nil), ctx.ReceivingPrograms...), true, true
+
+	case FieldDistrict:
+		if ctx.District == nil {
+			return nil, false, true
+		}
+		return *ctx.District, true, true
 
 	case FieldRegion:
 		if ctx.Region == nil {
