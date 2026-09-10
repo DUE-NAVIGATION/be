@@ -1,0 +1,876 @@
+[
+  {
+    "id": "seoul-gangnam-mental-health",
+    "name": "강남구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 강남구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "강남구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "강남구",
+      "roadAddress": "서울특별시 강남구 자곡로 100, 자곡문화센터 2층"
+    },
+    "contact": {
+      "phone": "02-2226-0344",
+      "website": "https://gangnam.go.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 강남구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-gangdong-mental-health",
+    "name": "강동구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 강동구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "강동구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "강동구",
+      "roadAddress": "서울특별시 강동구 구천면로 297-5, 천호보건지소 1층"
+    },
+    "contact": {
+      "phone": "02-471-3223",
+      "website": "https://happygd.co.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 강동구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-gangbuk-mental-health",
+    "name": "강북구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 강북구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "강북구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "강북구",
+      "roadAddress": "서울특별시 강북구 삼양로19길 154 강북구보건소 삼각산분소 3층"
+    },
+    "contact": {
+      "phone": "02-985-0222",
+      "website": "https://gangbuk.go.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 강북구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-gangseo-mental-health",
+    "name": "강서구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 강서구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "강서구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "강서구",
+      "roadAddress": "서울특별시 강서구 공항대로 561 강서구보건소 지하1층"
+    },
+    "contact": {
+      "phone": "02-2600-5926",
+      "website": "https://kscmhc.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 강서구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-gwanak-mental-health",
+    "name": "관악구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 관악구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "관악구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "관악구",
+      "roadAddress": "서울특별시 관악구 관악로 145, 3동 4층"
+    },
+    "contact": {
+      "phone": "02-879-4911",
+      "website": "https://gwanakmaum.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 관악구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-gwangjin-mental-health",
+    "name": "광진구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 광진구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "광진구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "광진구",
+      "roadAddress": "서울특별시 광진구 긴고랑로 110 중곡종합건강센터 4층"
+    },
+    "contact": {
+      "phone": "02-450-1895",
+      "website": "https://hopegj.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 광진구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-guro-mental-health",
+    "name": "구로구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 구로구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "구로구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "구로구",
+      "roadAddress": "서울특별시 구로구 공원로 21 나라키움 구로복합관사 2층"
+    },
+    "contact": {
+      "phone": "02-861-2284",
+      "website": "https://grcmhc.co.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 구로구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-geumcheon-mental-health",
+    "name": "금천구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 금천구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "금천구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "금천구",
+      "roadAddress": "서울특별시 금천구 시흥대로123길 11 독산1동주민센터 5층"
+    },
+    "contact": {
+      "phone": "02-3281-9314",
+      "website": "https://gcmhc.co.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 금천구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-nowon-mental-health",
+    "name": "노원구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 노원구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "노원구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "노원구",
+      "roadAddress": "서울특별시 노원구 노해로 455 MG노원빌딩 5층"
+    },
+    "contact": {
+      "phone": "02-933-4591",
+      "website": "https://nowonmind.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 노원구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-dobong-mental-health",
+    "name": "도봉구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 도봉구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "도봉구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "도봉구",
+      "roadAddress": "서울특별시 도봉구 방학로3길 117 도봉구보건소 1층"
+    },
+    "contact": {
+      "phone": "02-2091-5243",
+      "website": "https://dobongmind.co.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 도봉구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-dongdaemun-mental-health",
+    "name": "동대문구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 동대문구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "동대문구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "동대문구",
+      "roadAddress": "서울특별시 동대문구 홍릉로 81 홍릉문화복지센터 4층"
+    },
+    "contact": {
+      "phone": "02-963-1621",
+      "website": "https://ddmind.net"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 동대문구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-dongjak-mental-health",
+    "name": "동작구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 동작구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "동작구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "동작구",
+      "roadAddress": "서울특별시 동작구 장승배기로 161 구청사 4층"
+    },
+    "contact": {
+      "phone": "02-820-4072"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 동작구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-mapo-mental-health",
+    "name": "마포구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 마포구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "마포구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "마포구",
+      "roadAddress": "서울특별시 마포구 성산로4길 15 성산1동주민센터 3층"
+    },
+    "contact": {
+      "phone": "02-3272-4937",
+      "website": "https://mmhwc.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 마포구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-seodaemun-mental-health",
+    "name": "서대문구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 서대문구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "서대문구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "서대문구",
+      "roadAddress": "서울특별시 서대문구 연희로 242 보건소 별관 4층"
+    },
+    "contact": {
+      "phone": "02-3140-8081",
+      "website": "https://sdm.go.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 서대문구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-seocho-mental-health",
+    "name": "서초구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 서초구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "서초구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "서초구",
+      "roadAddress": "서울특별시 서초구 염곡말길 9 느티나무쉼터 3층"
+    },
+    "contact": {
+      "phone": "02-2155-8215",
+      "website": "https://scgmhc.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 서초구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-seongdong-mental-health",
+    "name": "성동구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 성동구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "성동구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "성동구",
+      "roadAddress": "서울특별시 성동구 행당로 12 성동구보건소금호분소 3층"
+    },
+    "contact": {
+      "phone": "02-2298-1080",
+      "website": "https://mindcare.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 성동구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-seongbuk-mental-health",
+    "name": "성북구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 성북구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "성북구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "성북구",
+      "roadAddress": "서울특별시 성북구 화랑로 63 하월곡동 성북구보건소 6층"
+    },
+    "contact": {
+      "phone": "02-2241-6313",
+      "website": "https://sbcmhc1.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 성북구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-songpa-mental-health",
+    "name": "송파구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 송파구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "송파구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "송파구",
+      "roadAddress": "서울특별시 송파구 양산로 5 송파구 보건지소 2층"
+    },
+    "contact": {
+      "phone": "02-402-5871",
+      "website": "https://spmind.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 송파구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-yangcheon-mental-health",
+    "name": "양천구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 양천구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "양천구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "양천구",
+      "roadAddress": "서울특별시 양천구 목동서로 339 양천구보건소 본관 2층"
+    },
+    "contact": {
+      "phone": "02-2061-8881",
+      "website": "https://yctouch.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 양천구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-yeongdeungpo-mental-health",
+    "name": "영등포구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 영등포구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "영등포구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "영등포구",
+      "roadAddress": "서울특별시 영등포구 당산로 123 영등포구보건소 4층"
+    },
+    "contact": {
+      "phone": "02-2670-4793",
+      "website": "https://ydp.go.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 영등포구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-yongsan-mental-health",
+    "name": "용산구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 용산구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "용산구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "용산구",
+      "roadAddress": "서울특별시 용산구 백범로 329 용산구보건분소 3층"
+    },
+    "contact": {
+      "phone": "02-703-8340",
+      "website": "https://ysmind.co.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 용산구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-eunpyeong-mental-health",
+    "name": "은평구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 은평구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "은평구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "은평구",
+      "roadAddress": "서울특별시 은평구 연서로34길 11 불광보건분소 3층"
+    },
+    "contact": {
+      "phone": "02-356-8683",
+      "website": "https://epmind.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 은평구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-jongno-mental-health",
+    "name": "종로구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 종로구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "종로구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "종로구",
+      "roadAddress": "서울특별시 종로구 성균관로15길 10"
+    },
+    "contact": {
+      "phone": "02-745-0199",
+      "website": "https://jongnomind.org"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 종로구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-junggu-mental-health",
+    "name": "중구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 중구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "중구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "중구",
+      "roadAddress": "서울특별시 중구 서소문로6길 16 중림종합복지센터 3층"
+    },
+    "contact": {
+      "phone": "02-2236-6606",
+      "website": "https://junggumind.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 중구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  },
+  {
+    "id": "seoul-jungnang-mental-health",
+    "name": "중랑구정신건강복지센터",
+    "type": "MENTAL_HEALTH",
+    "summary": "마음이 힘들 때 무료로 상담받을 수 있는 곳입니다. 중랑구에 사시면 누구나 이용할 수 있고, 필요하면 치료나 복지 서비스로 연결해 줍니다.",
+    "coverage": {
+      "scope": "SIGUNGU",
+      "sido": "서울특별시",
+      "sigungu": "중랑구"
+    },
+    "location": {
+      "sido": "서울특별시",
+      "sigungu": "중랑구",
+      "roadAddress": "서울특별시 중랑구 봉화산로 190 중랑구청 제2청사 5층"
+    },
+    "contact": {
+      "phone": "02-3422-3804",
+      "website": "https://jcmhc.or.kr"
+    },
+    "services": [
+      "정신건강 상담",
+      "사례관리",
+      "위기 개입",
+      "자살예방 상담",
+      "치료·복지 서비스 연계"
+    ],
+    "fee": "무료",
+    "authority": "서울특별시 중랑구",
+    "source": {
+      "url": "https://blutouch.net/facility/center",
+      "revisedAt": "2026-09-10",
+      "agency": "서울시정신건강복지센터(블루터치)",
+      "note": "블루터치(서울시정신건강복지센터) 기관 안내 페이지에서 확인한 값이다. ★ 운영시간은 센터마다 달라 확인하지 못했으므로 비워 두었다 — 전화로 확인하도록 화면에서 안내할 것. 이용 대상 조건은 '관할 주민 누구나'라 eligibility 를 비워 두었다."
+    }
+  }
+]

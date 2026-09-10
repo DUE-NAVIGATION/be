@@ -70,6 +70,7 @@ Go로 작성하며 REST API만 제공한다. 프론트(Next.js)는 `FE` 저장�
       cmd/server/main.go        진입점 (라우팅 · CORS · 그레이스풀 셧다운)
       cmd/validate/main.go      제도·시설 JSON 검증 CLI
       cmd/seed/main.go          제도 JSON → SQLite 씨딩 CLI
+      cmd/importfacilities/     공공데이터 CSV → 시설 JSON 변환 CLI
       internal/
         rules/                  규칙 엔진 (순수 함수) ★ 핵심
         income/                 소득 계산 엔진
@@ -81,6 +82,7 @@ Go로 작성하며 REST API만 제공한다. 프론트(Next.js)는 `FE` 저장�
       data/
         programs/*.json         제도 정의 ★ 원본
         facilities/*.json       시설 정의 (파일 하나에 배열로 여러 건)
+                                national-hotlines · seoul-mental-health(25개 자치구)
         median-income.json      기준중위소득 표
         due.db                  제도 DB (생성물. 커밋하지 않는다)
       go.mod
@@ -135,6 +137,6 @@ Go로 작성하며 REST API만 제공한다. 프론트(Next.js)는 `FE` 저장�
 - [x] Phase 5 — HTTP 계층 (extract/explain/document 는 Phase 4 에서)
 - [x] Phase 8 — 시설 연결 (모델·관할 판정·로더·검증·API). 2026-09-10 방향 전환
 - [ ] Phase 8-2 — 시설 화면 (전화 걸기·준비물·문의 스크립트) ★ 다음
-- [ ] Phase 8-3 — 공공데이터 → 시설 JSON 임포터, 실제 지역 데이터
+- [x] Phase 8-3 — 임포터(`cmd/importfacilities`) + 서울 25개 자치구 정신건강복지센터
 - [ ] Phase 6 — 문서 번역 (여유 시)
 - [x] Phase 7 — 데모 안정화 (캐시·Docker·체크리스트). 배포·리허설은 발표 전
