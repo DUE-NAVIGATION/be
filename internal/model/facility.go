@@ -132,6 +132,27 @@ func (c Coverage) Label() string {
 	return "관할 지역"
 }
 
+// Sector 는 시설을 누가 세웠는가다 — 공공인가 민간인가.
+//
+// ★ 기준은 "설치 주체" 다. 운영을 민간 법인에 위탁했어도 구청이 세운 센터는
+// PUBLIC 이다. 이용자에게 중요한 건 "공공이 책임지는 곳인가" 이고, 위탁 여부는
+// 계약에 따라 몇 년마다 바뀌어 데이터로 따라가기 어렵다.
+//
+// 이용자가 이 구분을 보는 이유: 공공 기관은 대개 무료이고 관할 주민을 거절하지
+// 않는다. 민간 기관은 이용료·정원·대기가 있을 수 있어 전화로 먼저 물어야 한다.
+type Sector string
+
+const (
+	// 국가·지자체·공공기관이 설치한 곳. 위탁 운영 포함
+	SectorPublic Sector = "PUBLIC"
+	// 사회복지법인·비영리단체·개인이 설치한 곳
+	SectorPrivate Sector = "PRIVATE"
+)
+
+func SectorIsKnown(s Sector) bool {
+	return s == SectorPublic || s == SectorPrivate
+}
+
 // Location 은 시설의 물리적 위치다.
 //
 // 항목 이름은 전국사회복지시설표준데이터를 따른다. 나중에 다른 지자체 데이터를
@@ -187,6 +208,10 @@ type Facility struct {
 	ID   string       `json:"id"`
 	Name string       `json:"name"`
 	Type FacilityType `json:"type"`
+	// 공공 / 민간. 결과 화면이 이 값으로 구역을 나눈다
+	Sector Sector `json:"sector"`
+	// 실제 운영 주체. 위탁이면 수탁 법인 이름. 확인되지 않으면 비운다
+	Operator string `json:"operator,omitempty"`
 	// 한 줄 설명. "무엇을 해주는 곳인지" 를 이용자 말로
 	Summary string `json:"summary,omitempty"`
 

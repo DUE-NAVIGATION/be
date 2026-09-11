@@ -33,6 +33,7 @@ data/facilities/
 | `id` | 파일 전체에서 유일. `시도-시군구-이름` 꼴을 권장 |
 | `name` | 시설명 (원본 그대로) |
 | `type` | 아래 시설 종류 중 하나 |
+| `sector` | `PUBLIC` 공공 / `PRIVATE` 민간. **설치 주체 기준** — 구청이 세우고 법인에 위탁했으면 `PUBLIC`. 모르면 확인 후 적는다 |
 | `coverage` | **관할 범위. 판정의 1순위 조건이다** |
 | `contact` | 연락 수단 최소 하나 |
 | `location` | HOTLINE 이 아니면 주소 필수 |
@@ -100,6 +101,7 @@ OTHER
 | 전화번호 | `contact.phone` |
 | 홈페이지주소 | `contact.website` |
 | 관할행정기관 | `authority` |
+| 설립주체 · 운영주체 | `sector` (유추. 못 알아보면 비워서 검증에서 걸린다. `-sector` 로 강제 가능) |
 | 데이터기준일자 | `source.revisedAt` |
 
 **표준데이터에 없어서 사람이 채워야 하는 것**

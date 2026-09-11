@@ -161,7 +161,7 @@ func TestConvertSkipsUnreachable(t *testing.T) {
 		{"홈페이지만있는곳", "서울특별시 관악구 관악로 3", "", "example.kr", "2026-08-31"},
 	}
 
-	got, skipped := convert(rows, col, model.FacilityChildCenter, "서울특별시", "seoul")
+	got, skipped := convert(rows, col, model.FacilityChildCenter, "", "서울특별시", "seoul")
 
 	if len(got) != 2 {
 		t.Fatalf("변환 %d건, want 2건 (연락 불가 1건은 빠져야 한다)", len(got))
@@ -176,5 +176,31 @@ func TestConvertSkipsUnreachable(t *testing.T) {
 		if f.Coverage.Sigungu != "관악구" {
 			t.Errorf("%s 의 관할 = %q, want 관악구", f.Name, f.Coverage.Sigungu)
 		}
+	}
+}
+
+// ★ 공공/민간은 설치 주체 기준이다. 모르면 비워서 검증이 사람을 부르게 한다.
+func TestGuessSector(t *testing.T) {
+	tests := []struct {
+		raw  string
+		want model.Sector
+	}{
+		{"지자체", model.SectorPublic},
+		{"구립", model.SectorPublic},
+		{"국가", model.SectorPublic},
+		// 설치는 지자체, 운영은 법인 — 설치 주체가 이긴다
+		{"지자체(법인위탁)", model.SectorPublic},
+		{"사회복지법인", model.SectorPrivate},
+		{"개인", model.SectorPrivate},
+		{"비영리 단체", model.SectorPrivate},
+		{"기타", ""},
+		{"", ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.raw, func(t *testing.T) {
+			if got := guessSector(tt.raw); got != tt.want {
+				t.Errorf("guessSector(%q) = %q, want %q", tt.raw, got, tt.want)
+			}
+		})
 	}
 }

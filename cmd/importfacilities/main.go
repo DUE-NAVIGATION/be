@@ -39,6 +39,7 @@ func main() {
 	out := flag.String("out", "", "만들 JSON 경로 (필수)")
 	typ := flag.String("type", "", "시설 종류. 비우면 시설종류명 컬럼에서 유추한다")
 	sido := flag.String("sido", "", "시도명. 주소에서 못 읽었을 때 쓴다")
+	sector := flag.String("sector", "", "PUBLIC / PRIVATE. 비우면 설립주체 컬럼에서 유추한다")
 	idPrefix := flag.String("prefix", "", "id 앞에 붙일 말 (기본: sido 로마자 없이 'fac')")
 	flag.Parse()
 
@@ -49,6 +50,10 @@ func main() {
 	if *typ != "" && !model.FacilityTypeIsKnown(model.FacilityType(*typ)) {
 		fmt.Fprintf(os.Stderr, "모르는 시설 종류입니다: %q\n쓸 수 있는 값: %v\n",
 			*typ, model.KnownFacilityTypes())
+		os.Exit(2)
+	}
+	if *sector != "" && !model.SectorIsKnown(model.Sector(*sector)) {
+		fmt.Fprintf(os.Stderr, "sector 는 PUBLIC 또는 PRIVATE 입니다: %q\n", *sector)
 		os.Exit(2)
 	}
 	if *idPrefix == "" {
@@ -62,7 +67,7 @@ func main() {
 	}
 
 	col := newColumns(header)
-	facilities, skipped := convert(rows, col, model.FacilityType(*typ), *sido, *idPrefix)
+	facilities, skipped := convert(rows, col, model.FacilityType(*typ), model.Sector(*sector), *sido, *idPrefix)
 
 	// 검증까지 여기서 돌린다. 깨진 채로 파일을 만들면 서버가 조용히 건너뛴다
 	valid := make([]model.Facility, 0, len(facilities))
@@ -186,6 +191,7 @@ var candidates = map[string][]string{
 	"capacity":  {"입소정원수", "입소정원", "정원"},
 	"authority": {"관할행정기관", "관리기관명", "관할기관"},
 	"revised":   {"데이터기준일자", "기준일자", "데이터기준일"},
+	"sector":    {"설립주체", "설치주체", "운영주체", "설립주체구분", "운영주체구분"},
 }
 
 func newColumns(header []string) *columns {
@@ -230,7 +236,7 @@ func (c *columns) missing() []string { return c.notFound }
 
 func convert(
 	rows [][]string, col *columns,
-	forced model.FacilityType, sidoFlag, prefix string,
+	forced model.FacilityType, forcedSector model.Sector, sidoFlag, prefix string,
 ) ([]model.Facility, []string) {
 	var (
 		out     []model.Facility
@@ -269,6 +275,12 @@ func convert(
 			ftype = guessType(col.get(row, "type"))
 		}
 
+		// 모르면 비워 둔다 — 검증에서 걸려 사람이 확인하게 된다
+		fsector := forcedSector
+		if fsector == "" {
+			fsector = guessSector(col.get(row, "sector"))
+		}
+
 		revised := col.get(row, "revised")
 		if revised == "" {
 			// 기준일자가 없으면 검증에서 걸린다. 사람이 채우도록 비워 두지 않고
@@ -283,9 +295,10 @@ func convert(
 		}
 
 		f := model.Facility{
-			ID:   id,
-			Name: name,
-			Type: ftype,
+			ID:     id,
+			Name:   name,
+			Type:   ftype,
+			Sector: fsector,
 			Coverage: model.Coverage{
 				Scope: model.CoverageSigungu, Sido: sido, Sigungu: sigungu,
 			},
@@ -373,6 +386,28 @@ func guessType(raw string) model.FacilityType {
 		return model.FacilityCommunityCenter
 	}
 	return model.FacilityOther
+}
+
+// guessSector 는 설립주체 문자열을 공공/민간으로 옮긴다.
+//
+// 공공 표지를 먼저 본다. "지자체(법인위탁)" 처럼 둘 다 적힌 값은 설치 주체가
+// 지자체이므로 PUBLIC 이다. 어느 쪽인지 모르면 빈 값 — 추측해서 넣지 않는다.
+func guessSector(raw string) model.Sector {
+	s := strings.ReplaceAll(raw, " ", "")
+	if s == "" {
+		return ""
+	}
+	for _, k := range []string{"국가", "국립", "지자체", "지방자치단체", "시립", "구립", "군립", "도립", "공립", "공공"} {
+		if strings.Contains(s, k) {
+			return model.SectorPublic
+		}
+	}
+	for _, k := range []string{"법인", "개인", "민간", "단체", "재단", "종교"} {
+		if strings.Contains(s, k) {
+			return model.SectorPrivate
+		}
+	}
+	return ""
 }
 
 // makeID 는 사람이 읽을 수 있는 id 를 만든다.

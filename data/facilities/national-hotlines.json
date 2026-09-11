@@ -3,6 +3,7 @@
     "id": "hotline-129",
     "name": "보건복지상담센터",
     "type": "HOTLINE",
+    "sector": "PUBLIC",
     "summary": "어디에 물어야 할지 모를 때 가장 먼저 걸어볼 번호입니다. 복지 전반을 상담하고 맞는 제도와 기관을 연결해 줍니다.",
 
     "coverage": { "scope": "NATIONWIDE" },
@@ -31,6 +32,7 @@
     "id": "hotline-109",
     "name": "자살예방 상담전화",
     "type": "HOTLINE",
+    "sector": "PUBLIC",
     "summary": "힘든 마음을 24시간 언제든 이야기할 수 있습니다. 전문 상담원이 받습니다.",
 
     "coverage": { "scope": "NATIONWIDE" },
@@ -60,6 +62,7 @@
     "id": "hotline-1366",
     "name": "여성긴급전화 1366",
     "type": "HOTLINE",
+    "sector": "PUBLIC",
     "summary": "가정폭력·성폭력·교제폭력 등으로 위험하거나 힘들 때 24시간 상담하고, 필요하면 보호시설로 연계합니다.",
 
     "coverage": { "scope": "NATIONWIDE" },
@@ -88,6 +91,7 @@
     "id": "hotline-1388",
     "name": "청소년전화 1388",
     "type": "HOTLINE",
+    "sector": "PUBLIC",
     "summary": "9세~24세 청소년과 보호자가 학업·가출·폭력·진로 문제를 24시간 상담할 수 있습니다.",
 
     "coverage": { "scope": "NATIONWIDE" },
@@ -134,6 +138,7 @@
     "id": "hotline-1577-0199",
     "name": "정신건강상담전화",
     "type": "HOTLINE",
+    "sector": "PUBLIC",
     "summary": "우울·불안·불면 등 정신건강 문제를 24시간 상담하고 가까운 정신건강복지센터로 연결해 줍니다.",
 
     "coverage": { "scope": "NATIONWIDE" },

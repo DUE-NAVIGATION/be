@@ -139,6 +139,12 @@ func ValidateFacility(f model.Facility) []string {
 	if !model.FacilityTypeIsKnown(f.Type) {
 		errs = append(errs, fmt.Sprintf("모르는 시설 종류입니다: %q", f.Type))
 	}
+	// 공공/민간을 모르면 화면이 어느 구역에 둘지 정할 수 없다.
+	// 추측해서 채우지 말고 설치 주체를 확인해 적는다
+	if !model.SectorIsKnown(f.Sector) {
+		errs = append(errs, fmt.Sprintf("sector 는 PUBLIC 또는 PRIVATE 여야 합니다: %q "+
+			"(설치 주체 기준 — 구청이 세우고 법인에 위탁했으면 PUBLIC)", f.Sector))
+	}
 
 	// ★ 연락 수단
 	if !f.Contact.Reachable() {
