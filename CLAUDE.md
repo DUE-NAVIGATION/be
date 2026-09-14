@@ -84,6 +84,7 @@ Go로 작성하며 REST API만 제공한다. 프론트(Next.js)는 `FE` 저장�
         facilities/*.json       시설 정의 (파일 하나에 배열로 여러 건)
                                 national-hotlines · seoul-mental-health(25개 자치구)
                                 seoul-child-center(153, 전국지역아동센터표준데이터)
+                                seoul-welfare-center(93, 보건복지부 사회복지관 현황)
         median-income.json      기준중위소득 표
         due.db                  제도 DB (생성물. 커밋하지 않는다)
       go.mod
