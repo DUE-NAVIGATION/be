@@ -30,10 +30,10 @@ services:
       - key: PROGRAM_SOURCE
         value: json
 
-      # ★ Vercel 프로덕션 도메인을 대시보드에서 넣는다. 정확히 일치해야 한다.
-      #   예: https://due-navigator.vercel.app
+      # ★ 프론트(Vercel 프로덕션) 오리진. 정확히 일치해야 한다 — 끝에 / 없이.
+      #   빠지면 화면에 "백엔드 없음" 만 뜬다. 주소가 바뀌면 여기를 고치고 푸시한다
       - key: CORS_ALLOWED_ORIGINS
-        sync: false
+        value: https://due-navigation.vercel.app,http://localhost:3000
 
       # 넣지 않아도 된다. 넣을 때는 대시보드에서만 (코드·이 파일에 쓰지 않는다)
       - key: ANTHROPIC_API_KEY
