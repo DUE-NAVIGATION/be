@@ -192,6 +192,9 @@ func TestGuessSector(t *testing.T) {
 		{"지자체(법인위탁)", model.SectorPublic},
 		{"사회복지법인", model.SectorPrivate},
 		{"개인", model.SectorPrivate},
+		// 전국지역아동센터표준데이터의 운영기관유형 값
+		{"사회적협동조합", model.SectorPrivate},
+		{"공립", model.SectorPublic},
 		{"비영리 단체", model.SectorPrivate},
 		{"기타", ""},
 		{"", ""},

@@ -189,9 +189,9 @@ var candidates = map[string][]string{
 	"lat":       {"위도", "latitude"},
 	"lng":       {"경도", "longitude"},
 	"capacity":  {"입소정원수", "입소정원", "정원"},
-	"authority": {"관할행정기관", "관리기관명", "관할기관"},
+	"authority": {"관할행정기관", "관리기관명", "관할기관", "제공기관명"},
 	"revised":   {"데이터기준일자", "기준일자", "데이터기준일"},
-	"sector":    {"설립주체", "설치주체", "운영주체", "설립주체구분", "운영주체구분"},
+	"sector":    {"설립주체", "설치주체", "운영주체", "설립주체구분", "운영주체구분", "운영기관유형"},
 }
 
 func newColumns(header []string) *columns {
@@ -402,7 +402,7 @@ func guessSector(raw string) model.Sector {
 			return model.SectorPublic
 		}
 	}
-	for _, k := range []string{"법인", "개인", "민간", "단체", "재단", "종교"} {
+	for _, k := range []string{"법인", "개인", "민간", "단체", "재단", "종교", "조합"} {
 		if strings.Contains(s, k) {
 			return model.SectorPrivate
 		}
