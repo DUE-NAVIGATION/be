@@ -84,4 +84,4 @@ data/
 
 ## 배포
 
-`Dockerfile`(distroless, 빌드 중 데이터 검증) · `fly.toml` 준비됨. 절차는 [DEPLOY.md](DEPLOY.md).
+**Render** 에 올린다 — `render.yaml`(Blueprint) · `Dockerfile`(distroless, 빌드 중 데이터 검증). 절차는 [DEPLOY.md](DEPLOY.md).

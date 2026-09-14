@@ -1,52 +1,52 @@
 # 배포
 
-FE 는 Vercel, BE 는 Fly.io 에 올린다. 둘은 서로의 주소만 알면 된다.
+FE 는 **Vercel**, BE 는 **Render** 에 올린다. 둘은 서로의 주소만 알면 된다.
 
 ```
-브라우저 ──▶ Vercel (Next.js)  ──▶ Fly.io (Go)  ──▶ Anthropic API
-             정적 화면            판정·계산          구조화·설명만
-                                  제도 DB(읽기 전용)
+브라우저 ──▶ Vercel (Next.js)  ──▶ Render (Go, Docker)
+             정적 화면            판정·계산 · 시설·제도 데이터(읽기 전용)
 ```
 
 **DB 는 여기 없다.** 사용자 데이터를 담는 저장소가 없기 때문이다 —
-제도 데이터만 이미지 안의 SQLite 파일에 들어 있고, 그마저 읽기 전용이다.
+시설·제도 데이터는 이미지 안에 들어 있고, 읽기 전용이다. 그래서 디스크·볼륨 설정이 필요 없다.
 
 ---
 
-## 1. 백엔드 — Fly.io
+## 1. 백엔드 — Render
 
 ### 최초 1회
 
-```bash
-cd api
-fly launch --no-deploy          # app 이름을 정한다. fly.toml 이 이미 있다
-fly secrets set ANTHROPIC_API_KEY=sk-ant-...
-```
+1. `be` 저장소를 GitHub 에 푸시한다 (Render 는 GitHub 에서 가져간다)
+2. Render 대시보드 → **New → Blueprint** → `DUE-NAVIGATION/be` 선택
+   → 저장소의 `render.yaml` 을 읽어 `due-api` 서비스를 만든다 (Docker · 무료 · 싱가포르)
+3. 대시보드에서 값을 넣으라고 묻는 두 개
+   - `CORS_ALLOWED_ORIGINS` — Vercel 프로덕션 도메인. **아직 모르면 일단 비워 두고 3단계 후에 넣는다**
+   - `ANTHROPIC_API_KEY` — 비워 둬도 된다. `DEMO_MODE=true` 라 캐시 응답으로 시연된다
 
-키를 넣지 않아도 된다. **키가 없어도 서버는 뜨고 판정은 정상 동작한다** —
-대화형 입력만 막히고 화면이 직접 입력으로 넘어간다.
-
-### 배포
-
-```bash
-fly deploy
-fly logs                        # "제도 저장소 source=..." 가 보이면 정상
-```
+빌드 중에 **시설·제도 데이터 검증이 자동으로 돈다.** 깨진 데이터가 있으면 배포가 멈춘다.
 
 ### 배포 후 확인
 
 ```bash
-curl https://due-api.fly.dev/healthz
+curl https://due-api.onrender.com/healthz
 ```
 
 ```json
-{ "status": "ok", "programCount": 3, "medianIncomeYear": 2026,
-  "storesUserData": false, "aiEnabled": true }
+{ "status": "ok", "programCount": 3, "facilityCount": 183,
+  "medianIncomeYear": 2026, "storesUserData": false, "aiEnabled": false }
 ```
 
-- `programCount` 가 **0 이면 안 된다.** 제도를 못 읽은 것이다
+- `programCount` · `facilityCount` 가 **0 이면 안 된다.** 데이터를 못 읽은 것이다
 - `storesUserData` 는 **항상 false** 다. 서버가 스스로 밝히는 값이다
-- `aiEnabled` 가 false 면 시크릿이 안 들어간 것이다 (판정에는 지장 없다)
+- 주소의 `due-api` 부분은 서비스 이름이 겹치면 Render 가 바꿔 준다. 실제 주소를 대시보드에서 확인할 것
+
+### ★ 무료 플랜은 잠든다
+
+15분간 요청이 없으면 잠들고, 첫 요청이 **30초~1분** 걸린다. 프론트는 8초에 타임아웃이 나서
+"백엔드 없음" 이 뜬다. 고장이 아니다.
+
+- **발표 5분 전에 `/healthz` 를 브라우저로 한 번 연다** — 깨어나면 이후는 즉시 응답한다
+- 심사 기간 내내 깨워 두려면 UptimeRobot 같은 무료 모니터링으로 10분마다 `/healthz` 를 부른다
 
 ### 환경변수
 
@@ -71,7 +71,7 @@ Vercel 에서 `DUE-NAVIGATION/FE` 저장소를 가져온다. 프레임워크는 
 **환경변수를 반드시 넣는다** (Settings → Environment Variables):
 
 ```
-NEXT_PUBLIC_API_BASE_URL = https://due-api.fly.dev
+NEXT_PUBLIC_API_BASE_URL = https://due-api.onrender.com
 ```
 
 `NEXT_PUBLIC_` 접두어가 붙은 값은 **브라우저까지 나간다.** 그래서 여기 넣어도 되는 것은
@@ -101,10 +101,13 @@ NEXT_PUBLIC_API_BASE_URL = https://due-api.fly.dev
   **채점자에게는 프로덕션 도메인을 준다.**
 - 로컬에서 포트 3000 이 잡히면 Next 가 3001 로 뜨는데, 그 순간 전 요청이 막힌다
 
-```bash
-# 프로덕션 + 로컬 둘 다 허용
-fly secrets set CORS_ALLOWED_ORIGINS="https://due-navigator.vercel.app,http://localhost:3000,http://localhost:3001"
+Render 대시보드 → `due-api` → Environment 에서 이렇게 넣는다 (쉼표 구분, 공백 없이).
+
 ```
+CORS_ALLOWED_ORIGINS = https://due-navigator.vercel.app,http://localhost:3000
+```
+
+값을 바꾸면 Render 가 서버를 다시 띄운다. 1분쯤 뒤에 다시 확인한다.
 
 증상은 언제나 같다 — 화면에 **"백엔드 없음"** 만 뜬다. 브라우저 콘솔을 열면
 `blocked by CORS policy` 가 보인다. 여기부터 확인할 것.
@@ -130,6 +133,8 @@ PROGRAM_SOURCE=sqlite go run ./cmd/server
 
 ## 5. 제출 전 점검
 
+- [ ] ★ **발표 5분 전 `/healthz` 로 Render 를 깨웠다**
+
 - [ ] `curl <BE>/healthz` → `programCount` 가 0 이 아니다
 - [ ] Vercel 프로덕션 도메인으로 열어 첫 화면이 "규칙 엔진 정상"
 - [ ] 직접 입력 → 결과 화면까지 완주
@@ -138,3 +143,17 @@ PROGRAM_SOURCE=sqlite go run ./cmd/server
 - [ ] 휴대폰에서 한 번 — 채점자가 폰으로 열 수 있다
 - [ ] 하단 고지 문구가 모든 화면에 보인다
 - [ ] 브라우저 콘솔에 CORS 오류가 없다
+
+---
+
+## 부록 — Fly.io 로 옮길 때
+
+`fly.toml` 이 남아 있다. 잠들지 않게 하려면(최소 1대 상시) Fly 가 낫지만, 신규 계정은 카드 등록이 필요하다.
+
+```bash
+fly launch --no-deploy
+fly secrets set CORS_ALLOWED_ORIGINS="https://due-navigator.vercel.app"
+fly deploy
+```
+
+그 경우 Vercel 의 `NEXT_PUBLIC_API_BASE_URL` 을 `https://<앱이름>.fly.dev` 로 바꾼다.
