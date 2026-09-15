@@ -28,7 +28,7 @@ const extractSystem = `당신은 복지 상담 접수 담당자입니다. 사용
 householdSize · age · incomeMonthly · assets · housingType · deposit ·
 monthlyRent · employmentStatus · isSingleParent · childrenAges ·
 hasDisability · disabilityLevel · isPregnant · basicLivelihoodType ·
-receivingPrograms · region
+receivingPrograms · region · district · crisisSignals
 
 ## 값의 형태
 housingType: MONTHLY_RENT / JEONSE / OWNED / PUBLIC_LEASE / FREE_USE / OTHER
@@ -38,6 +38,13 @@ disabilityLevel: SEVERE / MILD
 basicLivelihoodType: LIVELIHOOD / MEDICAL / HOUSING / EDUCATION / NONE
 금액: 원 단위 정수. "80만원" → 800000
 나이: 만 나이 정수
+
+## 위기 신호 (crisisSignals) — 가장 조심해서 다룹니다
+- 스스로를 해치고 싶다, 죽고 싶다, 사라지고 싶다는 말이 있으면 SELF_HARM
+- 누군가에게 맞거나 위협·폭력을 당하고 있다는 말이 있으면 VIOLENCE
+- 사용자가 그런 뜻을 말했을 때만 넣으세요. "힘들다", "지쳤다" 만으로는 넣지 않습니다.
+- 이 항목이 있어도 판정하거나 위로의 말을 덧붙이지 마세요. 값만 기록합니다.
+  (연락할 곳을 맨 위에 올리는 일은 프로그램이 합니다)
 
 ## 확신도 (confidence)
 - HIGH: 사용자가 그대로 말했다 ("아이는 7살")
@@ -84,7 +91,9 @@ var extractSchema = json.RawMessage(`{
         "isPregnant":          { "type": "boolean" },
         "basicLivelihoodType": { "type": "string", "enum": ["LIVELIHOOD","MEDICAL","HOUSING","EDUCATION","NONE"] },
         "receivingPrograms":   { "type": "array", "items": { "type": "string" } },
-        "region":              { "type": "string" }
+        "region":              { "type": "string" },
+        "district":            { "type": "string" },
+        "crisisSignals":       { "type": "array", "items": { "type": "string", "enum": ["SELF_HARM","VIOLENCE"] } }
       },
       "additionalProperties": false
     },

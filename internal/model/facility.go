@@ -212,6 +212,8 @@ type Facility struct {
 	Sector Sector `json:"sector"`
 	// 실제 운영 주체. 위탁이면 수탁 법인 이름. 확인되지 않으면 비운다
 	Operator string `json:"operator,omitempty"`
+	// 이 기관이 응답하는 위기 신호. 있으면 그 신호를 말한 사람에게 맨 위로 올라간다
+	Crisis []CrisisSignal `json:"crisis,omitempty"`
 	// 한 줄 설명. "무엇을 해주는 곳인지" 를 이용자 말로
 	Summary string `json:"summary,omitempty"`
 
@@ -245,6 +247,8 @@ type FacilityMatch struct {
 	Conditions []ConditionResult `json:"conditions"`
 	// 판정에 더 필요한 필드 이름. NEEDS_INFO 일 때만 채운다
 	MissingFields []string `json:"missingFields"`
+	// 사용자의 위기 신호에 응답하는 곳. 화면 맨 위 "지금 바로 이야기할 수 있는 곳" 에 둔다
+	Urgent bool `json:"urgent,omitempty"`
 }
 
 // FacilitySummary 는 시설 결과의 요약이다.

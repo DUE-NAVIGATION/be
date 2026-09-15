@@ -33,6 +33,7 @@
     "name": "자살예방 상담전화",
     "type": "HOTLINE",
     "sector": "PUBLIC",
+    "crisis": ["SELF_HARM"],
     "summary": "힘든 마음을 24시간 언제든 이야기할 수 있습니다. 전문 상담원이 받습니다.",
 
     "coverage": { "scope": "NATIONWIDE" },
@@ -63,6 +64,7 @@
     "name": "여성긴급전화 1366",
     "type": "HOTLINE",
     "sector": "PUBLIC",
+    "crisis": ["VIOLENCE"],
     "summary": "가정폭력·성폭력·교제폭력 등으로 위험하거나 힘들 때 24시간 상담하고, 필요하면 보호시설로 연계합니다.",
 
     "coverage": { "scope": "NATIONWIDE" },
@@ -139,6 +141,7 @@
     "name": "정신건강상담전화",
     "type": "HOTLINE",
     "sector": "PUBLIC",
+    "crisis": ["SELF_HARM"],
     "summary": "우울·불안·불면 등 정신건강 문제를 24시간 상담하고 가까운 정신건강복지센터로 연결해 줍니다.",
 
     "coverage": { "scope": "NATIONWIDE" },

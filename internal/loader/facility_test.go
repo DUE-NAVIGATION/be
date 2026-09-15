@@ -25,6 +25,15 @@ func TestValidateFacilityAcceptsValid(t *testing.T) {
 	}
 }
 
+func TestValidateFacilityRejectsUnknownCrisis(t *testing.T) {
+	f := validFacility()
+	f.Crisis = []model.CrisisSignal{"PANIC"}
+	errs := ValidateFacility(f)
+	if len(errs) == 0 || !strings.Contains(strings.Join(errs, " "), "crisis") {
+		t.Errorf("모르는 위기 신호가 통과했다: %v", errs)
+	}
+}
+
 // ★ 공공/민간을 모르면 화면이 어느 구역에 둘지 정할 수 없다
 func TestValidateFacilityRequiresSector(t *testing.T) {
 	for _, s := range []model.Sector{"", "NGO"} {

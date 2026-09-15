@@ -50,6 +50,8 @@ func EvaluateFacility(f model.Facility, ctx model.UserContext) model.FacilityMat
 		Status:        status,
 		Conditions:    conditions,
 		MissingFields: missing,
+		// ★ 위기 신호에 응답하는 곳이면 맨 위로. 갈 수 없는 곳(관할 밖)은 올리지 않는다
+		Urgent: status != model.MatchIneligible && model.RespondsTo(f.Crisis, ctx.CrisisSignals),
 	}
 }
 
@@ -207,6 +209,10 @@ func SummarizeFacilities(ms []model.FacilityMatch) model.FacilitySummary {
 func SortFacilities(ms []model.FacilityMatch) {
 	sort.SliceStable(ms, func(i, j int) bool {
 		a, b := ms[i], ms[j]
+		// 위기 신호에 응답하는 곳이 무엇보다 먼저다
+		if a.Urgent != b.Urgent {
+			return a.Urgent
+		}
 		if sa, sb := facilityOrder(a.Status), facilityOrder(b.Status); sa != sb {
 			return sa < sb
 		}

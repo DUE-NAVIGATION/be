@@ -146,6 +146,13 @@ func ValidateFacility(f model.Facility) []string {
 			"(설치 주체 기준 — 구청이 세우고 법인에 위탁했으면 PUBLIC)", f.Sector))
 	}
 
+	for _, c := range f.Crisis {
+		if !model.CrisisIsKnown(c) {
+			errs = append(errs, fmt.Sprintf("crisis 에 모르는 값이 있습니다: %q (쓸 수 있는 값: %v)",
+				c, model.KnownCrisisSignals()))
+		}
+	}
+
 	// ★ 연락 수단
 	if !f.Contact.Reachable() {
 		errs = append(errs, "연락할 방법이 하나도 없습니다 "+

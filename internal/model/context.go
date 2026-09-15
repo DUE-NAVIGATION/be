@@ -50,6 +50,8 @@ type UserContext struct {
 	// 시설은 물리적 장소라 관할을 벗어나면 안내가 헛걸음이 된다.
 	// 모르면 nil 이고, 그때는 관할이 FAIL 이 아니라 UNKNOWN 이 된다
 	District *string `json:"district,omitempty"`
+	// 지금 안전이 걱정되는 신호. nil = 말하지 않음. 판정에는 쓰지 않는다 (crisis.go)
+	CrisisSignals []CrisisSignal `json:"crisisSignals,omitempty"`
 
 	// ★ 파생값 — income 엔진이 계산해 채운다. 사용자가 직접 입력하지 않는다.
 	// 중위소득 대비 비율(%). 대부분의 제도 자격이 이 값 하나로 갈린다.
