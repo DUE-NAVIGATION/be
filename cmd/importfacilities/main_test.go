@@ -179,6 +179,28 @@ func TestConvertSkipsUnreachable(t *testing.T) {
 	}
 }
 
+// ★ 줄임 표기가 그대로 들어가면 관할 판정에서 전부 "관할 밖" 이 된다.
+func TestNormalizeSido(t *testing.T) {
+	tests := map[string]string{
+		"경남": "경상남도", "강원도": "강원특별자치도", "서울시": "서울특별시",
+		"충남": "충청남도", "전라북도": "전북특별자치도", "경기도": "경기도",
+		// 경기도 광주시와 겹치므로 옮기지 않는다
+		"광주시": "광주시",
+	}
+	for in, want := range tests {
+		if got := normalizeSido(in); got != want {
+			t.Errorf("normalizeSido(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+func TestSplitRegionNormalizesShortSido(t *testing.T) {
+	sido, sigungu := splitRegion("경남 창원시 의창구 원이대로 1", "", "")
+	if sido != "경상남도" || sigungu != "창원시" {
+		t.Errorf("splitRegion = %q %q, want 경상남도 창원시", sido, sigungu)
+	}
+}
+
 // ★ 공공/민간은 설치 주체 기준이다. 모르면 비워서 검증이 사람을 부르게 한다.
 func TestGuessSector(t *testing.T) {
 	tests := []struct {

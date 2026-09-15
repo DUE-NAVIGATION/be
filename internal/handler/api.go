@@ -51,6 +51,7 @@ func (a *API) Routes() http.Handler {
 	mux.HandleFunc("GET /healthz", a.health)
 	mux.HandleFunc("GET /api/programs", a.programs)
 	mux.HandleFunc("GET /api/facilities", a.facilities)
+	mux.HandleFunc("GET /api/regions", a.regions)
 	mux.HandleFunc("POST /api/evaluate", a.evaluate)
 
 	mux.HandleFunc("POST /api/extract", a.extract)

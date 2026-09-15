@@ -83,8 +83,8 @@ Go로 작성하며 REST API만 제공한다. 프론트(Next.js)는 `FE` 저장�
         programs/*.json         제도 정의 ★ 원본
         facilities/*.json       시설 정의 (파일 하나에 배열로 여러 건)
                                 national-hotlines · seoul-mental-health(25개 자치구)
-                                seoul-child-center(153, 전국지역아동센터표준데이터)
-                                seoul-welfare-center(93, 보건복지부 사회복지관 현황)
+                                child-center(전국 1,747, 전국지역아동센터표준데이터)
+                                welfare-center(전국 481, 보건복지부 사회복지관 현황)
         median-income.json      기준중위소득 표
         due.db                  제도 DB (생성물. 커밋하지 않는다)
       go.mod
@@ -98,6 +98,7 @@ Go로 작성하며 REST API만 제공한다. 프론트(Next.js)는 `FE` 저장�
     POST /api/document    { imageBase64 }  → { summary, todos[], deadline, ... }
     GET  /api/programs                     → { programs[] }
     GET  /api/facilities                   → { facilities[], problems[] }
+    GET  /api/regions                      → { regions[{ sido, sigungu[] }] }  시·군·구 선택 목록
     GET  /healthz                          → { status, service, storesUserData }
 
 - ★ 헬스체크만 `/api` 접두어가 없다. 프론트 `lib/api.ts` 의 `getHealth` 와 맞춰야 한다.

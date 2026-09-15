@@ -14,7 +14,7 @@
 ```bash
 go run ./cmd/server       # http://localhost:8080
 curl localhost:8080/healthz
-# {"status":"ok","programCount":3,"facilityCount":276,"aiEnabled":false,"storesUserData":false,...}
+# {"status":"ok","programCount":3,"facilityCount":2258,"aiEnabled":false,"storesUserData":false,...}
 ```
 
 **API 키가 없어도 판정은 그대로 동작한다.** 자연어 입력(`/api/extract`)과 쉬운 설명(`/api/explain`)만
@@ -49,7 +49,7 @@ internal/
   ai/                 Claude 호출 · 스키마 검증 · 민감정보 필터
 data/
   programs/*.json     제도 정의 ★ 원본
-  facilities/*.json   시설 — 상담전화 5 · 서울 정신건강복지센터 25 · 지역아동센터 153 · 종합사회복지관 93
+  facilities/*.json   시설 — 상담전화 5 · 서울 정신건강복지센터 25 · 전국 지역아동센터 1,747 · 전국 사회복지관 481
   median-income.json  기준중위소득 표
 ```
 
@@ -62,6 +62,7 @@ data/
 | POST | `/api/explain` | `{ results, summary }` | `{ explanation }` |
 | GET | `/api/programs` | — | `{ programs[] }` |
 | GET | `/api/facilities` | — | `{ facilities[], problems[] }` |
+| GET | `/api/regions` | — | `{ regions[{ sido, sigungu[] }] }` — 입력 화면의 시·군·구 선택 목록 |
 | GET | `/healthz` | — | `{ status, programCount, facilityCount, aiEnabled, storesUserData }` |
 
 자세한 요청·응답은 [API.md](API.md).

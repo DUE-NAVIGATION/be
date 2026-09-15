@@ -264,10 +264,17 @@ func convert(
 		road := col.get(row, "road")
 		lot := col.get(row, "lot")
 		sido, sigungu := splitRegion(road, lot, sidoFlag)
+		coverage := model.Coverage{
+			Scope: model.CoverageSigungu, Sido: sido, Sigungu: sigungu,
+		}
 		if sigungu == "" {
-			skipped = append(skipped,
-				fmt.Sprintf("%d행 %s: 주소에서 시군구를 읽지 못했습니다 (%q)", n+2, name, road))
-			continue
+			// 세종특별자치시는 시군구가 없다. 시도 전체가 관할이다
+			if sido != "세종특별자치시" {
+				skipped = append(skipped,
+					fmt.Sprintf("%d행 %s: 주소에서 시군구를 읽지 못했습니다 (%q)", n+2, name, road))
+				continue
+			}
+			coverage = model.Coverage{Scope: model.CoverageSido, Sido: sido}
 		}
 
 		ftype := forced
@@ -295,13 +302,11 @@ func convert(
 		}
 
 		f := model.Facility{
-			ID:     id,
-			Name:   name,
-			Type:   ftype,
-			Sector: fsector,
-			Coverage: model.Coverage{
-				Scope: model.CoverageSigungu, Sido: sido, Sigungu: sigungu,
-			},
+			ID:       id,
+			Name:     name,
+			Type:     ftype,
+			Sector:   fsector,
+			Coverage: coverage,
 			Location: model.Location{
 				Sido: sido, Sigungu: sigungu,
 				RoadAddress: road, LotAddress: lot,
@@ -332,6 +337,9 @@ func splitRegion(road, lot, fallbackSido string) (string, string) {
 		addr = lot
 	}
 	fields := strings.Fields(addr)
+	if len(fields) > 0 {
+		fields[0] = normalizeSido(fields[0])
+	}
 
 	sido, sigungu := "", ""
 	if len(fields) > 0 && isSido(fields[0]) {
@@ -386,6 +394,35 @@ func guessType(raw string) model.FacilityType {
 		return model.FacilityCommunityCenter
 	}
 	return model.FacilityOther
+}
+
+// sidoAlias 는 공공데이터 주소의 줄임 표기를 정식 시도명으로 옮긴다.
+//
+// ★ 보건복지부 사회복지관 현황은 "경남 창원시…", "강원도 춘천시…" 처럼 적는다.
+// 정식 명칭(입력 화면의 시도 목록)과 다르면 관할 판정에서 전부 "관할 밖" 이 된다.
+// "광주시" 는 넣지 않는다 — 경기도 광주시(시군구)와 겹친다.
+var sidoAlias = map[string]string{
+	"서울": "서울특별시", "서울시": "서울특별시",
+	"부산": "부산광역시", "부산시": "부산광역시",
+	"대구": "대구광역시", "대구시": "대구광역시",
+	"인천": "인천광역시", "인천시": "인천광역시",
+	"광주": "광주광역시",
+	"대전": "대전광역시", "대전시": "대전광역시",
+	"울산": "울산광역시", "울산시": "울산광역시",
+	"세종": "세종특별자치시", "세종시": "세종특별자치시",
+	"경기": "경기도",
+	"강원": "강원특별자치도", "강원도": "강원특별자치도",
+	"충북": "충청북도", "충남": "충청남도",
+	"전북": "전북특별자치도", "전라북도": "전북특별자치도",
+	"전남": "전라남도", "경북": "경상북도", "경남": "경상남도",
+	"제주": "제주특별자치도", "제주도": "제주특별자치도",
+}
+
+func normalizeSido(s string) string {
+	if v, ok := sidoAlias[s]; ok {
+		return v
+	}
+	return s
 }
 
 // guessSector 는 설립주체 문자열을 공공/민간으로 옮긴다.

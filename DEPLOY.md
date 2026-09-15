@@ -32,7 +32,7 @@ curl https://due-api.onrender.com/healthz
 ```
 
 ```json
-{ "status": "ok", "programCount": 3, "facilityCount": 276,
+{ "status": "ok", "programCount": 3, "facilityCount": 2258,
   "medianIncomeYear": 2026, "storesUserData": false, "aiEnabled": false }
 ```
 
