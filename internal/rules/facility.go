@@ -229,6 +229,30 @@ func SortFacilities(ms []model.FacilityMatch) {
 	})
 }
 
+// TrimOutOfScope 는 관할 밖 시설을 limit 건만 남긴다.
+//
+// ★ 전국 데이터에서 관할 밖은 2천 곳이 넘는다. 그대로 내려보내면 응답이 4.5MB 가 되고
+// (실측), 그 97% 는 이용자가 갈 수 없는 곳이다. 휴대폰 데이터도, 무료 서버의 대역폭도
+// 거기에 쓰인다. 몇 건만 남겨 "우리 동네 것만 나온 게 맞나" 를 확인할 수 있게 하고,
+// 전체 건수는 요약(FacilitySummary.OutOfScope)이 그대로 들고 있다.
+//
+// ★ 자르기 전에 요약을 먼저 계산해야 한다. 화면의 건수가 줄어들면 안 된다.
+// 이용 가능·확인 필요는 하나도 버리지 않는다 — 그건 이용자가 갈 수 있는 곳이다.
+func TrimOutOfScope(ms []model.FacilityMatch, limit int) []model.FacilityMatch {
+	out := make([]model.FacilityMatch, 0, len(ms))
+	kept := 0
+	for _, m := range ms {
+		if m.Status == model.MatchIneligible {
+			if kept >= limit {
+				continue
+			}
+			kept++
+		}
+		out = append(out, m)
+	}
+	return out
+}
+
 func facilityOrder(s model.MatchStatus) int {
 	switch s {
 	case model.MatchEligible:

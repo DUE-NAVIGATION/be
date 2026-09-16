@@ -50,6 +50,12 @@ func (a *API) facilities(w http.ResponseWriter, _ *http.Request) {
 // ★ /api/evaluate 안에서 제도 판정과 함께 호출된다. 엔드포인트를 나누지 않는
 // 이유: 화면이 한 번만 호출하면 되고, 무엇보다 두 결과가 같은 입력에서
 // 나왔다는 것이 보장된다. 따로 부르면 그 사이에 사용자가 값을 고칠 수 있다.
+// OutOfScopeInResponse 는 응답에 담는 관할 밖 시설의 최대 건수다.
+//
+// 화면은 "관할 밖 N곳" 을 접어 두고, 펼쳐도 스무 곳 남짓만 보여준다. 그보다 많이
+// 내려보내는 것은 아무도 보지 않는 4MB 를 이용자의 데이터로 받게 하는 일이다.
+const OutOfScopeInResponse = 20
+
 func (a *API) evaluateFacilities(ctx model.UserContext) ([]model.FacilityMatch, model.FacilitySummary) {
 	if a.Facilities == nil {
 		return []model.FacilityMatch{}, model.FacilitySummary{}
@@ -61,8 +67,9 @@ func (a *API) evaluateFacilities(ctx model.UserContext) ([]model.FacilityMatch, 
 		matches = append(matches, rules.EvaluateFacility(f, ctx))
 	}
 
+	// ★ 요약을 먼저. 자른 뒤에 세면 화면의 건수가 줄어든다
 	summary := rules.SummarizeFacilities(matches)
 	rules.SortFacilities(matches)
 
-	return matches, summary
+	return rules.TrimOutOfScope(matches, OutOfScopeInResponse), summary
 }
