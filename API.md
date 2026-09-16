@@ -41,10 +41,13 @@
   "service": "due-api",
   "storesUserData": false,
   "programCount": 3,
+  "facilityCount": 2258,
   "medianIncomeYear": 2026,
   "aiEnabled": true
 }
 ```
+
+`facilityCount` 가 `0` 이면 시설 데이터를 못 읽은 것이다. 첫 화면에 "기관 N곳" 으로 쓴다.
 
 `aiEnabled` 가 `false` 면 `/api/extract` · `/api/explain` 이 503 을 돌려준다.
 대화형 입력 대신 **수동 입력 폼**을 띄워야 한다.
@@ -94,9 +97,19 @@
 | `isPregnant` | boolean | |
 | `basicLivelihoodType` | `LIVELIHOOD` `MEDICAL` `HOUSING` `EDUCATION` `NONE` | `NONE` = 수급자 아님(정보), 생략 = 모름 |
 | `receivingPrograms` | string[] | 현재 받는 제도 |
-| `region` | string | 시도 |
+| `region` | string | 시도 (예: `"서울특별시"`) |
+| `district` | string | 시군구 (예: `"관악구"`). ★ 시설 판정의 1순위 조건 |
+| `crisisSignals` | (`SELF_HARM` \| `VIOLENCE`)[] | 지금 안전이 걱정되는 신호 |
 
 `householdIncomePct` 는 **보내지 않는다.** 서버가 계산해서 채운다.
+
+> ★ `region` · `district` 는 **`GET /api/regions` 가 준 값 그대로** 보낼 것.
+> "수원" 이나 "장안구" 처럼 자유 입력하면 데이터의 `"수원시"` 와 어긋나 갈 수 있는 곳이
+> 전부 "관할 밖" 으로 빠진다.
+>
+> ★ `crisisSignals` 는 **판정을 바꾸지 않는다.** 그 신호에 응답하는 기관(`facility.crisis`)을
+> 맨 위로 올리는 데만 쓴다 (`facilities[].urgent`). 가장 민감한 입력이라 저장·로그에 남지 않고,
+> 기관에 보내는 문의 문구에도 넣지 않는다.
 
 ### 응답
 
@@ -147,11 +160,68 @@
     "totalAnnualAmount": 2760000,
     "excludedByConflict": []
   },
+  "facilities": [ /* 아래 "시설" 참조 */ ],
+  "facilitySummary": {
+    "availableCount": 73,
+    "needsInfoCount": 0,
+    "outOfScope": 2185,
+    "reachableNow": 73
+  },
   "incomePct": 19.05,
   "medianIncomeYear": 2026,
   "disclaimer": "실제 수급 여부는 관할 기관의 심사로 결정됩니다"
 }
 ```
+
+### 시설 (`facilities`) ★ 결과 화면의 주인공
+
+제도와 같은 규칙 엔진으로 판정한다. 다른 점은 **관할 지역이 조건 맨 앞에 붙는다**는 것이다.
+
+```json
+{
+  "facility": {
+    "id": "hotline-109",
+    "name": "자살예방 상담전화",
+    "type": "HOTLINE",
+    "sector": "PUBLIC",
+    "operator": "",
+    "crisis": ["SELF_HARM"],
+    "summary": "힘든 마음을 24시간 언제든 이야기할 수 있습니다.",
+    "coverage": { "scope": "NATIONWIDE" },
+    "location": { "sido": "", "sigungu": "", "roadAddress": "" },
+    "contact": { "phone": "109", "hours": "24시간 연중무휴", "always": true },
+    "services": ["자살예방 상담"],
+    "fee": "무료 (국번없이 109)",
+    "source": { "url": "...", "revisedAt": "2026-09-10" }
+  },
+  "status": "ELIGIBLE",
+  "conditions": [
+    {
+      "condition": { "field": "region", "op": "eq", "label": "전국 누구나 이용 가능" },
+      "group": "coverage",
+      "status": "PASS",
+      "reason": "지역 제한이 없습니다"
+    }
+  ],
+  "missingFields": [],
+  "urgent": true
+}
+```
+
+| 필드 | 뜻 |
+| --- | --- |
+| `sector` | `PUBLIC` 공공 / `PRIVATE` 민간. **설치 주체 기준** — 구청이 세우고 법인에 위탁했으면 공공. 화면은 이 값으로 구역을 나눈다 |
+| `operator` | 실제 운영 법인 (위탁이면 수탁 법인). 확인 안 되면 빈 값 |
+| `crisis` | 이 기관이 응답하는 위기 신호 |
+| `coverage.scope` | `NATIONWIDE` / `SIDO` / `SIGUNGU`. 거주지를 모르면 관할이 `UNKNOWN` → `NEEDS_INFO` |
+| `contact.always` | 24시간 운영. 밤에 급한 사람에게 먼저 보여야 한다 |
+| `urgent` | 사용자의 `crisisSignals` 에 응답하는 곳. 화면 맨 위에 따로 둔다 |
+
+- 정렬은 **위기 응답 → 이용 가능 → 확인 필요 → 관할 밖**, 같은 상태에서는 24시간 → 전화 가능 → id 순
+- ★ **관할 밖(`INELIGIBLE`)은 최대 20건만 담긴다.** 전국 데이터에서 관할 밖은 2천 곳이 넘고,
+  전부 보내면 응답이 4.5MB 가 된다(실측 → 193KB). 전체 건수는 `facilitySummary.outOfScope` 에 있다.
+  **"관할 밖 N곳" 은 목록 길이가 아니라 이 값으로 표시할 것**
+- `sector` 가 없는 시설을 공공으로 취급하지 말 것. 확인되지 않았다는 뜻이다
 
 ### 화면을 그릴 때
 
@@ -165,6 +235,9 @@
 | `missingFields` | 더 물어봐야 할 항목. `NEEDS_INFO` 일 때만 채워진다 |
 | `incomePct` | "중위소득 약 19%". 계산 불가면 `null` |
 | `estimatedAmount` | **연간** 예상액(원). `RATE`·`IN_KIND` 급여는 `0` |
+| `facilitySummary.availableCount` · `reachableNow` | 상단 **"지금 연락하실 수 있는 곳 N곳 · N곳은 바로 전화"** |
+| `facilitySummary.outOfScope` | "관할 지역이 아닌 곳 N곳" (접어 둔다) |
+| `facilities[].urgent` | 맨 위 **"지금 바로 이야기할 수 있는 곳"** 상자 |
 
 - `results` 는 **해당 → 확인필요 → 미해당** 순, 같은 상태에서는 금액이 큰 것부터 이미 정렬되어 있다
 - **`INELIGIBLE` 도 함께 내려간다.** 접어두더라도 "왜 안 되는지" 를 볼 수 있어야 한다
@@ -172,9 +245,17 @@
 
 ### 알아둘 것 — `none`(배제) 조건의 표시
 
-배제 조건(예: "주거급여를 받고 있지 않을 것")은 **`PASS` 가 "배제 조건에 걸렸다"** 는 뜻이라
-사용자 화면 기준으로는 의미가 뒤집혀 있다. **지금은 그대로 내려가므로 프론트에서 그대로 그리면 어색하다.**
-표시 규칙을 정리해 서버에서 뒤집을 예정이다 (아래 "알려진 과제" 참조).
+조건마다 **`group`** 이 붙는다 — `all` · `any` · `none` · `coverage`.
+
+배제 조건(`group: "none"`, 예: "재직 중이 아닐 것")은 엔진 관점에서 **`PASS` 가 "배제에 걸렸다"**,
+즉 이용자에게는 **탈락**이라는 뜻이다. 의미가 뒤집혀 있다.
+
+- 서버는 **엔진 관점의 원자료를 그대로** 내려보낸다 (`status` 를 뒤집지 않는다)
+- **화면이 `group === "none"` 일 때 `PASS`/`FAIL` 을 뒤집어 그린다.** `UNKNOWN` 은 그대로 둔다
+- `reason` 문구는 이미 이용자 관점으로 쓰여 있다 ("여기에 해당하지 않습니다")
+
+프론트 구현은 `FE/lib/format.ts` 의 `displayStatus` 다. 실제로 이 표시가 반대로 나가
+"통과인데 붉은 FAIL" 로 보이던 버그가 있었고, 테스트로 고정해 두었다.
 
 ---
 
@@ -195,6 +276,43 @@
 
 `problems` 는 **읽다가 건너뛴 파일**이다. 제도 하나가 깨져도 서버는 죽지 않고 나머지로 동작한다.
 비어 있으면 이 항목 자체가 없다.
+
+---
+
+## GET /api/facilities
+
+서버가 읽고 있는 **시설 전체**. 판정하지 않는다. 데이터 작성자 확인용·디버깅용.
+
+```json
+{
+  "facilities": [ /* 위 facility 와 같은 모양 */ ],
+  "count": 2258,
+  "problems": [{ "file": "seoul-x.json", "reason": "연락할 방법이 하나도 없습니다" }],
+  "disclaimer": "실제 수급 여부는 관할 기관의 심사로 결정됩니다"
+}
+```
+
+★ 2천 건이 전부 내려온다(약 2MB). **화면에서 쓰지 말 것** — 판정 결과는 `/api/evaluate` 에서 온다.
+
+---
+
+## GET /api/regions
+
+입력 화면의 **시·군·구 선택 목록**. 서버가 들고 있는 시설의 관할에서 만든다.
+
+```json
+{
+  "regions": [
+    { "sido": "경기도", "sigungu": ["가평군", "고양시", "과천시"] },
+    { "sido": "세종특별자치시", "sigungu": [] }
+  ]
+}
+```
+
+- `sigungu` 가 **빈 배열이면 시도 전체가 관할**이다 (세종특별자치시). 시군구를 묻지 않아도 된다
+- 전국 대상 상담 전화는 지역을 늘리지 않는다 — 목록에 나타나지 않는다
+- 정렬은 이름순. 시도 순서는 화면이 자기 목록대로 정한다
+- 실패해도 화면이 멈추면 안 된다. 목록을 못 받으면 **시군구를 직접 입력**하게 두는 편이 낫다
 
 ---
 
@@ -294,9 +412,12 @@ curl -X POST http://localhost:8080/api/evaluate -H "Content-Type: application/js
 
 | 항목 | 내용 |
 | --- | --- |
-| `none` 조건 표시 | 배제 조건의 `PASS`/`FAIL` 의미가 화면 기준과 반대다. 서버에서 뒤집을지 결정 필요 |
-| 소득인정액 | 재산의 소득환산·근로소득공제가 아직 반영되지 않았다. `incomePct` 가 실제보다 낮게 나올 수 있다 |
-| 제도 수 | 현재 3건. 30~50건이 목표 |
-| 중복수급 관계 | 엔진은 완성. 관계 데이터(`data/relations.json`)가 아직 비어 있다 |
+| 제도 수 | 현재 3건. 30~50건이 목표 — **가장 큰 병목** |
+| 소득인정액 | 재산의 소득환산·근로소득공제가 아직 반영되지 않았다. `incomePct` 가 실제보다 낮게 나올 수 있다 (`median-income.json` 의 `propertyConversion` 이 `null`) |
+| 중복수급 관계 | 엔진은 완성. 관계 데이터(`data/relations.json`)가 아직 없다 |
+| 기관 종류 | 상담 전화 · 정신건강복지센터(서울) · 지역아동센터 · 사회복지관. 노인·장애인 시설은 사회복지시설정보서비스 API 로 확장 예정 |
+| 운영시간·이용료 | 기관마다 달라 대부분 비어 있다. 화면이 "전화로 확인" 으로 안내한다 — 지어내지 않는다 |
+| 요청 횟수 제한 | 없다. 본문 1MB 상한만 있다. AI 키를 넣고 공개하면 `/api/extract` 남용을 막을 장치가 필요하다 |
+| 문서 번역 | `POST /api/document` 는 501 (Phase 6) |
 
-앞의 두 가지는 **2026-09-09 전문가 자문** 후 확정한다.
+`none` 조건 표시는 **해결됐다** — 조건마다 `group` 이 붙고 화면이 뒤집어 그린다 (위 참조).
