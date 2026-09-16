@@ -51,6 +51,10 @@ type Config struct {
 	DemoMode bool
 	Cache    Cache
 
+	// DailyLimit 은 하루 AI 호출 상한이다. 0 이면 제한하지 않는다.
+	// 넘으면 Cache 가 있으면 캐시로 답하고, 없으면 ErrBudgetExceeded (budget.go)
+	DailyLimit int
+
 	// 테스트에서 바꿔 끼운다. 비어 있으면 실제 Anthropic 주소를 쓴다
 	BaseURL string
 	HTTP    *http.Client
@@ -61,8 +65,9 @@ type Config struct {
 // ★ 이 패키지는 판정에 관여하지 않는다. 자연어를 구조로 옮기고,
 // 이미 나온 판정 결과를 사람 말로 풀 뿐이다.
 type Client struct {
-	cfg  Config
-	http *http.Client
+	cfg    Config
+	http   *http.Client
+	budget *budget
 }
 
 func New(cfg Config) *Client {
@@ -79,7 +84,7 @@ func New(cfg Config) *Client {
 	if hc == nil {
 		hc = &http.Client{Timeout: cfg.Timeout}
 	}
-	return &Client{cfg: cfg, http: hc}
+	return &Client{cfg: cfg, http: hc, budget: newBudget(cfg.DailyLimit)}
 }
 
 // Enabled 는 호출할 준비가 되었는지 알려준다.

@@ -62,6 +62,14 @@ func (c *Client) Explain(ctx context.Context, results []model.MatchResult, summa
 		return decodeExplanation(raw)
 	}
 
+	// ★ 하루 상한 (extract 와 같은 이유. budget.go)
+	if !c.allowCall("explain") {
+		if raw, ok := c.cacheFallback("explain", cacheKey(brief)); ok {
+			return decodeExplanation(raw)
+		}
+		return "", ErrBudgetExceeded
+	}
+
 	raw, err := c.callTool(ctx, explainSystem, brief,
 		explainToolName, explainToolDesc, explainSchema)
 	if err != nil {

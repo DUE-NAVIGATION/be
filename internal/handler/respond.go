@@ -18,7 +18,9 @@ const (
 	CodeBodyTooLarge   = "BODY_TOO_LARGE"
 	CodeNotFound       = "NOT_FOUND"
 	CodeNotImplemented = "NOT_IMPLEMENTED"
-	CodeInternal       = "INTERNAL"
+	// AI 엔드포인트에만 붙는다. 요금을 막는 장치다 (ratelimit.go)
+	CodeTooManyRequests = "TOO_MANY_REQUESTS"
+	CodeInternal        = "INTERNAL"
 	// AI 를 쓸 수 없다(키 없음) / 호출했지만 실패했다.
 	// 둘 다 프론트는 "수동 입력" 으로 폴백한다
 	CodeAIUnavailable = "AI_UNAVAILABLE"

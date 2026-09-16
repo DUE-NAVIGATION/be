@@ -22,6 +22,9 @@ type API struct {
 	// AI 는 없어도 서버가 뜬다. 없으면 해당 엔드포인트만 503 을 돌려주고,
 	// 프론트는 수동 입력으로 넘어간다. 판정은 AI 없이도 완전히 동작한다
 	AI *ai.Client
+	// AIRatePerMin 은 한 요청자가 1분에 부를 수 있는 AI 엔드포인트 횟수다.
+	// 0 이면 제한하지 않는다 (로컬 개발). ratelimit.go
+	AIRatePerMin int
 }
 
 // ProgramSource 는 제도 데이터를 어디서 읽든 handler 가 기대하는 모습이다.
@@ -54,8 +57,10 @@ func (a *API) Routes() http.Handler {
 	mux.HandleFunc("GET /api/regions", a.regions)
 	mux.HandleFunc("POST /api/evaluate", a.evaluate)
 
-	mux.HandleFunc("POST /api/extract", a.extract)
-	mux.HandleFunc("POST /api/explain", a.explain)
+	// ★ AI 엔드포인트만 횟수를 제한한다. 판정은 돈이 들지 않으니 제한하지 않는다
+	aiLimit := newRateLimiter(a.AIRatePerMin)
+	mux.HandleFunc("POST /api/extract", a.limitAI(aiLimit, a.extract))
+	mux.HandleFunc("POST /api/explain", a.limitAI(aiLimit, a.explain))
 
 	// Phase 6 에서 붙는다. 경로와 에러 형식만 확정해 둔다.
 	mux.HandleFunc("POST /api/document", notImplemented("문서 번역"))

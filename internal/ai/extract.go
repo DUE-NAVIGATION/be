@@ -138,6 +138,17 @@ func (c *Client) Extract(ctx context.Context, text string) (ExtractionResult, er
 		return out, err
 	}
 
+	// ★ 하루 상한을 넘으면 호출하지 않는다. 공개 주소라 반복 호출이 곧 요금이다.
+	//   캐시가 있으면 그것으로 답해 화면이 멈추지 않게 한다
+	if !c.allowCall("extract") {
+		if raw, ok := c.cacheFallback("extract", cacheKey(clean.Text)); ok {
+			out, err := decodeExtraction(raw)
+			out.Sanitized = clean.Found
+			return out, err
+		}
+		return ExtractionResult{Sanitized: clean.Found}, ErrBudgetExceeded
+	}
+
 	// 2) 도구 스키마를 강제해 호출
 	raw, err := c.callTool(ctx, extractSystem, clean.Text,
 		extractToolName, extractToolDesc, extractSchema)

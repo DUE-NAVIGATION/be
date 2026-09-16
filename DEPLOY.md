@@ -59,6 +59,8 @@ curl https://due-api.onrender.com/healthz
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:3000` | **쉼표 구분. 정확 일치** |
 | `ANTHROPIC_API_KEY` | (없음) | 시크릿으로만 |
 | `DEMO_MODE` | `false` | 캐시된 응답으로 API 호출 없이 시연 |
+| `AI_RATE_PER_MIN` | `6` | 요청자(IP)당 1분 AI 호출 상한. 0 = 제한 없음 |
+| `AI_DAILY_LIMIT` | `300` | 하루 전체 AI 호출 상한. 넘으면 데모 캐시로 답한다 |
 
 ---
 

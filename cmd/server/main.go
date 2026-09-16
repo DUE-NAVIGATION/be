@@ -83,12 +83,19 @@ func main() {
 
 	// 데모 모드면 미리 뽑아둔 응답을 쓴다.
 	// ★ 이게 있으면 API 키도 네트워크도 없이 데모가 완주된다.
+	// ★ 데모 모드가 아니어도 읽어 둔다. 하루 상한을 넘겼을 때 이 캐시로 답한다
+	//   (없으면 503 → 프론트가 수동 입력으로 넘어간다)
 	var demoCache ai.Cache
-	if demoMode {
+	{
 		fc, err := ai.LoadCache(filepath.Join(dataDir, "demo-cache.json"))
 		if err != nil {
-			// 뜨지 못할 이유는 아니지만, 발표 당일에야 알면 늦는다. 크게 남긴다
-			slog.Error("DEMO_MODE 인데 데모 캐시를 쓸 수 없습니다", "err", err)
+			if demoMode {
+				// 뜨지 못할 이유는 아니지만, 발표 당일에야 알면 늦는다. 크게 남긴다
+				slog.Error("DEMO_MODE 인데 데모 캐시를 쓸 수 없습니다", "err", err)
+			} else {
+				slog.Info("데모 캐시가 없습니다. 하루 상한을 넘으면 AI 엔드포인트는 503 을 돌려줍니다",
+					"err", err)
+			}
 		} else {
 			demoCache = fc
 			for _, op := range fc.Ops() {
@@ -104,6 +111,8 @@ func main() {
 		Timeout:  envDuration("AI_TIMEOUT_SECONDS", 8*time.Second),
 		DemoMode: demoMode,
 		Cache:    demoCache,
+		// ★ 공개 주소라 반복 호출이 곧 요금이다. 하루 상한을 넘으면 캐시로 답한다
+		DailyLimit: envInt("AI_DAILY_LIMIT", 300),
 	})
 	switch {
 	case demoCache != nil:
@@ -115,10 +124,12 @@ func main() {
 	}
 
 	api := &handler.API{
-		Programs:   store,
-		Facilities: facilities,
-		Income:     income.Calculator{Table: table},
-		AI:         aiClient,
+		Programs: store,
+		// ★ AI 엔드포인트만 1분에 몇 번으로 제한한다 (handler/ratelimit.go)
+		AIRatePerMin: envInt("AI_RATE_PER_MIN", 6),
+		Facilities:   facilities,
+		Income:       income.Calculator{Table: table},
+		AI:           aiClient,
 	}
 
 	srv := &http.Server{
@@ -249,6 +260,20 @@ func envDuration(key string, fallback time.Duration) time.Duration {
 		return fallback
 	}
 	return time.Duration(n) * time.Second
+}
+
+// envInt 은 정수 환경변수를 읽는다. 잘못된 값이면 기본값을 쓴다.
+// ★ 0 은 그대로 받는다 — 횟수 상한에서 0 은 "제한하지 않음" 이라는 뜻이다.
+func envInt(key string, fallback int) int {
+	v := os.Getenv(key)
+	if v == "" {
+		return fallback
+	}
+	n, err := strconv.Atoi(v)
+	if err != nil || n < 0 {
+		return fallback
+	}
+	return n
 }
 
 func env(key, fallback string) string {
