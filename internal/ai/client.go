@@ -102,14 +102,43 @@ type toolSpec struct {
 }
 
 type messagesRequest struct {
-	Model      string     `json:"model"`
-	MaxTokens  int        `json:"max_tokens"`
-	System     string     `json:"system"`
-	Messages   []message  `json:"messages"`
-	Tools      []toolSpec `json:"tools"`
-	ToolChoice toolChoice `json:"tool_choice"`
+	Model     string `json:"model"`
+	MaxTokens int    `json:"max_tokens"`
+	// ★ 문자열이 아니라 블록 배열이다. 캐시 표시를 달 자리가 필요하다
+	System     []systemBlock `json:"system"`
+	Messages   []message     `json:"messages"`
+	Tools      []toolSpec    `json:"tools"`
+	ToolChoice toolChoice    `json:"tool_choice"`
 	// 같은 입력에 같은 답이 나오도록 낮춘다. 구조화는 창의성이 필요 없다
 	Temperature float64 `json:"temperature"`
+}
+
+// systemBlock 은 시스템 문구 한 덩이다. 마지막 블록에 캐시 표시를 단다.
+type systemBlock struct {
+	Type         string        `json:"type"`
+	Text         string        `json:"text"`
+	CacheControl *cacheControl `json:"cache_control,omitempty"`
+}
+
+type cacheControl struct {
+	Type string `json:"type"`
+}
+
+// systemPrompt 는 시스템 문구를 캐시 가능한 블록으로 만든다.
+//
+// ★ 우리 프롬프트는 시스템 문구와 도구 스키마가 매 호출마다 똑같다(고정 약 1,900 토큰).
+// 바뀌는 건 사용자가 쓴 문장뿐이다. 요청은 tools → system → messages 순서로 조립되므로
+// 마지막 시스템 블록에 표시를 달면 **도구 스키마까지 함께** 캐시된다.
+//
+// 두 번째 호출부터 그 부분의 입력 비용이 1/10 로 떨어진다(처음 한 번만 1.25배).
+// 캐시 최소 길이는 모델마다 다르다 — Sonnet 5 는 512 토큰이라 걸리고,
+// Haiku 4.5 는 4,096 토큰이라 우리 프롬프트로는 걸리지 않는다. 그래서 Sonnet 5 를 쓴다.
+func systemPrompt(text string) []systemBlock {
+	return []systemBlock{{
+		Type:         "text",
+		Text:         text,
+		CacheControl: &cacheControl{Type: "ephemeral"},
+	}}
 }
 
 type message struct {
@@ -129,7 +158,14 @@ type messagesResponse struct {
 		Input json.RawMessage `json:"input"`
 	} `json:"content"`
 	StopReason string `json:"stop_reason"`
-	Error      *struct {
+	// 캐시가 먹고 있는지 확인하는 유일한 근거. 숫자만 로그에 남긴다
+	Usage struct {
+		InputTokens              int `json:"input_tokens"`
+		OutputTokens             int `json:"output_tokens"`
+		CacheCreationInputTokens int `json:"cache_creation_input_tokens"`
+		CacheReadInputTokens     int `json:"cache_read_input_tokens"`
+	} `json:"usage"`
+	Error *struct {
 		Type    string `json:"type"`
 		Message string `json:"message"`
 	} `json:"error"`
@@ -150,7 +186,7 @@ func (c *Client) callTool(ctx context.Context, system, user, toolName, toolDesc 
 	body, err := json.Marshal(messagesRequest{
 		Model:       c.cfg.Model,
 		MaxTokens:   defaultMaxTokens,
-		System:      system,
+		System:      systemPrompt(system),
 		Messages:    []message{{Role: "user", Content: user}},
 		Tools:       []toolSpec{{Name: toolName, Description: toolDesc, InputSchema: schema}},
 		ToolChoice:  toolChoice{Type: "tool", Name: toolName},
@@ -215,6 +251,13 @@ func (c *Client) once(ctx context.Context, body []byte, toolName string) (json.R
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("API 가 %d 를 돌려줬습니다", resp.StatusCode)
 	}
+
+	// ★ 남기는 것은 숫자뿐이다. 캐시읽음이 0 으로만 계속 찍히면 캐싱이 깨진 것이다
+	slog.Info("AI 사용량",
+		"입력", out.Usage.InputTokens,
+		"출력", out.Usage.OutputTokens,
+		"캐시읽음", out.Usage.CacheReadInputTokens,
+		"캐시씀", out.Usage.CacheCreationInputTokens)
 
 	for _, blk := range out.Content {
 		if blk.Type == "tool_use" && blk.Name == toolName {

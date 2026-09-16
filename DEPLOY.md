@@ -133,6 +133,22 @@ PROGRAM_SOURCE=sqlite go run ./cmd/server
 
 ---
 
+## 4-2. AI 키 투입 (2026-09-19 예정)
+
+시연 서버는 그때까지 `DEMO_MODE=true` 로 미리 뽑아둔 응답을 쓴다. 실제 AI 로 바꿀 때:
+
+1. [Anthropic 콘솔](https://console.anthropic.com) 에서 키 발급 → **Billing 에서 월 사용 한도**를 건다 (1만원 수준)
+2. Render → `due-api` → Environment
+   - `ANTHROPIC_API_KEY` 추가 (★ 대시보드에만. 코드·파일에 넣지 않는다)
+   - `DEMO_MODE` 를 `false` 로
+   - 심사 기간이면 `AI_DAILY_LIMIT` 를 `100` 정도로 낮춘다
+3. **Save, rebuild, and deploy**
+4. 로그에서 확인할 것
+   - `서버 시작 ... aiEnabled=true demoMode=false`
+   - 첫 대화형 입력 뒤 `AI 사용량 ... 캐시읽음=0 캐시씀=1800` → 두 번째 호출에서 `캐시읽음` 이 올라가면 캐싱이 먹고 있다
+5. 모델은 **Sonnet 5** 를 쓴다 (`ANTHROPIC_MODEL` 기본값). Haiku 로 내리면 캐싱이 걸리지 않아
+   실제 비용 차이가 거의 없다 — API.md "프롬프트 캐싱" 참조
+
 ## 5. 제출 전 점검
 
 - [ ] ★ **발표 5분 전 `/healthz` 로 Render 를 깨웠다**
