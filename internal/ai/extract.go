@@ -108,9 +108,12 @@ employmentStatus: EMPLOYED / SELF_EMPLOYED / LOST_JOB / UNEMPLOYED /
 - LOW: 다른 해석도 가능하다. 이때는 followUpQuestions 로 반드시 확인하세요.
 
 ★ 여러 값 중 하나를 고르면서 망설였다면 HIGH 가 아닙니다.
-★ 확신이 LOW 인데 판정을 가르는 항목(housingType · householdSize · incomeMonthly)이면
-  차라리 비워 두세요. 빈 값은 "확인 필요" 로 남지만, 틀린 값은 판정을 통째로 망칩니다.
   화면은 당신의 확신도를 사용자에게 그대로 보여줍니다. 부풀리지 마세요.
+★ 두 값 사이에서 도저히 고를 수 없을 때만 비워 두세요. 빈 값은 "확인 필요" 로
+  남지만, 틀린 값은 판정을 통째로 망칩니다.
+  ※ 이것은 고르기 어려울 때의 규칙입니다. 사용자가 분명히 말한 값에는
+    적용하지 마세요 — 확신이 없다는 이유로 들은 것을 버리면, 사용자는 방금 한
+    말을 또 입력해야 합니다. 그것도 나쁜 결과입니다.
 
 ## 되묻기 (followUpQuestions)
 판정에 꼭 필요한데 비어 있는 항목을 물어보세요. 최대 3개.
@@ -150,24 +153,51 @@ var extractSchema = json.RawMessage(`{
     "extracted": {
       "type": "object",
       "properties": {
-        "householdSize":       { "type": "integer", "minimum": 1 },
-        "age":                 { "type": "integer", "minimum": 0, "maximum": 130 },
-        "incomeMonthly":       { "type": "integer", "minimum": 0 },
-        "assets":              { "type": "integer", "minimum": 0 },
-        "housingType":         { "type": "string", "enum": ["MONTHLY_RENT","JEONSE","OWNED","PUBLIC_LEASE","FREE_USE","OTHER"] },
-        "deposit":             { "type": "integer", "minimum": 0 },
-        "monthlyRent":         { "type": "integer", "minimum": 0 },
-        "employmentStatus":    { "type": "string", "enum": ["EMPLOYED","SELF_EMPLOYED","LOST_JOB","UNEMPLOYED","STUDENT","RETIRED","ON_LEAVE","OTHER"] },
-        "isSingleParent":      { "type": "boolean" },
-        "childrenAges":        { "type": "array", "items": { "type": "integer", "minimum": 0 } },
-        "hasDisability":       { "type": "boolean" },
-        "disabilityLevel":     { "type": "string", "enum": ["SEVERE","MILD"] },
-        "isPregnant":          { "type": "boolean" },
-        "basicLivelihoodType": { "type": "string", "enum": ["LIVELIHOOD","MEDICAL","HOUSING","EDUCATION","NONE"] },
-        "receivingPrograms":   { "type": "array", "items": { "type": "string" } },
-        "region":              { "type": "string" },
-        "district":            { "type": "string" },
-        "crisisSignals":       { "type": "array", "items": { "type": "string", "enum": ["SELF_HARM","VIOLENCE"] } }
+        "householdSize": {
+          "type": "integer", "minimum": 1,
+          "description": "함께 사는 사람 수(본인 포함). 혼자 산다/혼자 살아요/독거=1, 아내랑 둘이=2, 애 둘이랑 셋이=3. 사용자가 이렇게 말했으면 반드시 채운다. 사람 수를 말하지 않았을 때만 비운다."
+        },
+        "age": {
+          "type": "integer", "minimum": 0, "maximum": 130,
+          "description": "사용자가 말한 나이를 정수로. 순우리말 수를 반드시 읽을 것: 스물아홉=29, 서른둘=32, 마흔=40, 쉰다섯=55, 예순여덟=68, 일흔셋=73, 여든=80, 환갑=60, 칠순=70. '60대 중반'처럼 범위로만 말하면 비운다."
+        },
+        "incomeMonthly": {
+          "type": "integer", "minimum": 0,
+          "description": "월 소득(원). 80만원=800000. 연 단위로 말하면 나누지 말고 비운 뒤 되묻는다."
+        },
+        "assets": {
+          "type": "integer", "minimum": 0,
+          "description": "재산 총액(원). 말하지 않았으면 비운다."
+        },
+        "housingType": {
+          "type": "string", "enum": ["MONTHLY_RENT","JEONSE","OWNED","PUBLIC_LEASE","FREE_USE","OTHER"],
+          "description": "MONTHLY_RENT=월세·반전세. JEONSE=전세. OWNED=자가·내 집. PUBLIC_LEASE=임대아파트·공공임대·영구임대·국민임대·행복주택·LH/SH 임대('임대아파트'라고만 해도 이 값). FREE_USE=부모·친척 집 무상거주·사택·기숙사. OTHER=고시원·여관·쪽방. 어느 쪽인지 모르겠으면 찍지 말고 비운다."
+        },
+        "deposit": {
+          "type": "integer", "minimum": 0,
+          "description": "보증금(원). 금액을 말했을 때만."
+        },
+        "monthlyRent": {
+          "type": "integer", "minimum": 0,
+          "description": "월세(원). 금액을 말했을 때만."
+        },
+        "employmentStatus": {
+          "type": "string", "enum": ["EMPLOYED","SELF_EMPLOYED","LOST_JOB","UNEMPLOYED","STUDENT","RETIRED","ON_LEAVE","OTHER"],
+          "description": "다니던 일이 끊긴 경우 LOST_JOB, 원래부터 일하지 않으면 UNEMPLOYED. 나이만 보고 RETIRED 로 정하지 않는다."
+        },
+        "isSingleParent":      { "type": "boolean", "description": "혼자 아이를 키운다고 말한 경우 true." },
+        "childrenAges":        { "type": "array", "items": { "type": "integer", "minimum": 0 }, "description": "자녀의 만 나이 목록. '중학생'처럼 범위로 말하면 넣지 않고 되묻는다." },
+        "hasDisability":       { "type": "boolean", "description": "장애가 있다고 말한 경우만. 다쳤다·아프다는 말만으로는 넣지 않는다." },
+        "disabilityLevel":     { "type": "string", "enum": ["SEVERE","MILD"], "description": "심한 장애=SEVERE, 심하지 않은 장애=MILD. 정도를 말했을 때만." },
+        "isPregnant":          { "type": "boolean", "description": "임신·출산을 말한 경우만." },
+        "basicLivelihoodType": { "type": "string", "enum": ["LIVELIHOOD","MEDICAL","HOUSING","EDUCATION","NONE"], "description": "기초생활보장 급여 구분. '수급자'라고만 하고 종류를 말하지 않으면 비우고 되묻는다. NONE 은 수급자가 아니라고 분명히 말한 경우." },
+        "receivingPrograms": {
+          "type": "array", "items": { "type": "string" },
+          "description": "지금 받고 있다고 말한 제도를 말한 그대로. 예: 기초연금 받아요 → [\"기초연금\"]. 사실 기록이므로 반드시 채운다. 중복 수급 판정의 입력이다."
+        },
+        "region":              { "type": "string", "description": "시·도 (예: 서울특별시)." },
+        "district":            { "type": "string", "description": "시·군·구 (예: 관악구)." },
+        "crisisSignals":       { "type": "array", "items": { "type": "string", "enum": ["SELF_HARM","VIOLENCE"] }, "description": "스스로를 해치고 싶다는 말이면 SELF_HARM, 폭력·위협을 당한다는 말이면 VIOLENCE. 힘들다·지쳤다 만으로는 넣지 않는다." }
       },
       "additionalProperties": false
     },
