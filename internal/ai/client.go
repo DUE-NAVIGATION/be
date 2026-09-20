@@ -14,10 +14,10 @@ import (
 
 // 기본값. 데모에서 8초 넘게 멈춰 있으면 안 된다 (기획서 Phase 7).
 const (
-	defaultBaseURL    = "https://api.anthropic.com"
-	defaultModel      = "claude-sonnet-5"
-	defaultTimeout    = 8 * time.Second
-	anthropicVersion  = "2023-06-01"
+	defaultBaseURL   = "https://api.anthropic.com"
+	defaultModel     = "claude-sonnet-5"
+	defaultTimeout   = 8 * time.Second
+	anthropicVersion = "2023-06-01"
 	// ★ 생각 토큰이 이 한도 안에 들어간다. 생각을 켠 뒤 1024 로 두면
 	// 생각하다가 한도에 걸려 도구 호출이 아예 나오지 않는다.
 	// 실제 답(JSON)은 300 토큰 남짓이라 나머지는 생각 몫이다.
