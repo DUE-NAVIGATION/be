@@ -286,8 +286,21 @@ func TestForcesToolUse(t *testing.T) {
 	if !ok || choice["type"] != "tool" || choice["name"] != extractToolName {
 		t.Errorf("tool_choice = %v, 도구를 강제해야 한다", req["tool_choice"])
 	}
-	if req["temperature"] != float64(0) {
-		t.Errorf("temperature = %v, 구조화는 0 이어야 한다", req["temperature"])
+	// ★ Sonnet 5 는 sampling 파라미터를 받지 않는다. 보내면 400 이라 호출 자체가 죽는다.
+	// 이 테스트가 막지 않으면 "일관성을 위해" 다시 넣기 쉬운 자리다.
+	for _, k := range []string{"temperature", "top_p", "top_k"} {
+		if _, sent := req[k]; sent {
+			t.Errorf("%s 를 보냈다 — Sonnet 5 는 이 파라미터를 400 으로 거절한다", k)
+		}
+	}
+	// 생각을 켜면 생각 토큰이 출력 토큰으로 과금되고 max_tokens 안에서 답이 잘린다.
+	// 생략하면 Sonnet 5 는 adaptive 로 켜지므로 반드시 명시해야 한다.
+	thinking, ok := req["thinking"].(map[string]any)
+	if !ok || thinking["type"] != "disabled" {
+		t.Errorf("thinking = %v, 구조화 호출에서는 꺼야 한다", req["thinking"])
+	}
+	if _, sent := thinking["budget_tokens"]; sent {
+		t.Error("budget_tokens 를 보냈다 — Sonnet 5 에서 제거된 파라미터다")
 	}
 }
 

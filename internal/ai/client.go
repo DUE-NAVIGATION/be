@@ -109,8 +109,23 @@ type messagesRequest struct {
 	Messages   []message     `json:"messages"`
 	Tools      []toolSpec    `json:"tools"`
 	ToolChoice toolChoice    `json:"tool_choice"`
-	// 같은 입력에 같은 답이 나오도록 낮춘다. 구조화는 창의성이 필요 없다
-	Temperature float64 `json:"temperature"`
+
+	// ★ temperature 를 보내지 않는다. Sonnet 5 는 sampling 파라미터
+	// (temperature · top_p · top_k)를 받지 않고 400 으로 거절한다.
+	// 구조화의 일관성은 도구 스키마 강제(tool_choice)가 만든다.
+	//
+	// ★ 생각(thinking)은 꺼둔다. Sonnet 5 는 생략하면 adaptive 로 켜지는데,
+	// 생각 토큰은 출력 토큰으로 과금되고($10/1M) max_tokens 1024 안에서
+	// 답까지 잘릴 수 있다. 우리 작업은 정해진 스키마를 채우는 일이라
+	// 추론 깊이가 필요 없고, 8초 타임아웃 안에 끝나야 한다.
+	Thinking thinkingConfig `json:"thinking"`
+}
+
+// thinkingConfig 는 확장 사고 설정이다. 우리는 "disabled" 만 쓴다.
+//
+// ※ budget_tokens 는 Sonnet 5 에서 제거됐다. 넣으면 400 이다.
+type thinkingConfig struct {
+	Type string `json:"type"`
 }
 
 // systemBlock 은 시스템 문구 한 덩이다. 마지막 블록에 캐시 표시를 단다.
@@ -131,8 +146,14 @@ type cacheControl struct {
 // 마지막 시스템 블록에 표시를 달면 **도구 스키마까지 함께** 캐시된다.
 //
 // 두 번째 호출부터 그 부분의 입력 비용이 1/10 로 떨어진다(처음 한 번만 1.25배).
-// 캐시 최소 길이는 모델마다 다르다 — Sonnet 5 는 512 토큰이라 걸리고,
+//
+// ★ 캐시 최소 길이는 모델마다 다르다 — Sonnet 5 는 1,024 토큰이다.
+// 이보다 짧은 앞부분은 표시를 달아도 조용히 캐시되지 않는다. 오류가 나지 않으므로
+// 로그의 "캐시읽음" 이 계속 0 이면 그게 유일한 신호다.
 // Haiku 4.5 는 4,096 토큰이라 우리 프롬프트로는 걸리지 않는다. 그래서 Sonnet 5 를 쓴다.
+//
+// extract 의 고정부는 약 1,900 토큰이라 걸린다. explain 은 더 짧아
+// 최소 길이에 못 미칠 수 있다 — 실제 호출의 usage 로 확인할 것.
 func systemPrompt(text string) []systemBlock {
 	return []systemBlock{{
 		Type:         "text",
@@ -184,13 +205,13 @@ func (c *Client) callTool(ctx context.Context, system, user, toolName, toolDesc 
 	}
 
 	body, err := json.Marshal(messagesRequest{
-		Model:       c.cfg.Model,
-		MaxTokens:   defaultMaxTokens,
-		System:      systemPrompt(system),
-		Messages:    []message{{Role: "user", Content: user}},
-		Tools:       []toolSpec{{Name: toolName, Description: toolDesc, InputSchema: schema}},
-		ToolChoice:  toolChoice{Type: "tool", Name: toolName},
-		Temperature: 0,
+		Model:      c.cfg.Model,
+		MaxTokens:  defaultMaxTokens,
+		System:     systemPrompt(system),
+		Messages:   []message{{Role: "user", Content: user}},
+		Tools:      []toolSpec{{Name: toolName, Description: toolDesc, InputSchema: schema}},
+		ToolChoice: toolChoice{Type: "tool", Name: toolName},
+		Thinking:   thinkingConfig{Type: "disabled"},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("요청을 만들지 못했습니다: %w", err)
