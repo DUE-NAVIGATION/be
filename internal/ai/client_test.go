@@ -293,14 +293,23 @@ func TestForcesToolUse(t *testing.T) {
 			t.Errorf("%s 를 보냈다 — Sonnet 5 는 이 파라미터를 400 으로 거절한다", k)
 		}
 	}
-	// 생각을 켜면 생각 토큰이 출력 토큰으로 과금되고 max_tokens 안에서 답이 잘린다.
-	// 생략하면 Sonnet 5 는 adaptive 로 켜지므로 반드시 명시해야 한다.
+	// 생각을 끄면 한 문장에서 항목 여러 개를 골라내지 못하고 눈에 띄는 것
+	// 하나만 채운다 (2026-09-20 실측). Sonnet 5 에서 켜는 방법은 adaptive 뿐이다.
 	thinking, ok := req["thinking"].(map[string]any)
-	if !ok || thinking["type"] != "disabled" {
-		t.Errorf("thinking = %v, 구조화 호출에서는 꺼야 한다", req["thinking"])
+	if !ok || thinking["type"] != "adaptive" {
+		t.Errorf("thinking = %v, 추출은 생각을 켜야 빠뜨리지 않는다", req["thinking"])
 	}
 	if _, sent := thinking["budget_tokens"]; sent {
 		t.Error("budget_tokens 를 보냈다 — Sonnet 5 에서 제거된 파라미터다")
+	}
+	// 깊이는 effort 로 정한다. 추출에 high 이상은 출력 토큰만 늘린다
+	oc, ok := req["output_config"].(map[string]any)
+	if !ok || oc["effort"] != "low" {
+		t.Errorf("output_config = %v, effort 는 low 여야 한다", req["output_config"])
+	}
+	// 생각 토큰이 max_tokens 안에 들어간다. 1024 면 생각하다 걸려 도구 호출이 안 나온다
+	if mt, _ := req["max_tokens"].(float64); mt < 2048 {
+		t.Errorf("max_tokens = %v, 생각을 켰으면 넉넉해야 한다", req["max_tokens"])
 	}
 }
 

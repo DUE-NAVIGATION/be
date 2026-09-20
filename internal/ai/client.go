@@ -18,7 +18,11 @@ const (
 	defaultModel      = "claude-sonnet-5"
 	defaultTimeout    = 8 * time.Second
 	anthropicVersion  = "2023-06-01"
-	defaultMaxTokens  = 1024
+	// ★ 생각 토큰이 이 한도 안에 들어간다. 생각을 켠 뒤 1024 로 두면
+	// 생각하다가 한도에 걸려 도구 호출이 아예 나오지 않는다.
+	// 실제 답(JSON)은 300 토큰 남짓이라 나머지는 생각 몫이다.
+	// 한도일 뿐 여기까지 쓰지 않는다 — effort=low 가 실제 사용량을 정한다.
+	defaultMaxTokens  = 4096
 	maxResponseBytes  = 1 << 20 // 1MB. 응답이 이보다 클 이유가 없다
 	followUpQuestions = 3       // 한 번에 되묻는 질문 수 상한
 )
@@ -114,18 +118,41 @@ type messagesRequest struct {
 	// (temperature · top_p · top_k)를 받지 않고 400 으로 거절한다.
 	// 구조화의 일관성은 도구 스키마 강제(tool_choice)가 만든다.
 	//
-	// ★ 생각(thinking)은 꺼둔다. Sonnet 5 는 생략하면 adaptive 로 켜지는데,
-	// 생각 토큰은 출력 토큰으로 과금되고($10/1M) max_tokens 1024 안에서
-	// 답까지 잘릴 수 있다. 우리 작업은 정해진 스키마를 채우는 일이라
-	// 추론 깊이가 필요 없고, 8초 타임아웃 안에 끝나야 한다.
-	Thinking thinkingConfig `json:"thinking"`
+	// ★ 생각(thinking)은 켠다. 2026-09-20 에 껐다가 되돌렸다 —
+	// 이유는 아래 thinkingConfig 주석에 적었다.
+	Thinking     thinkingConfig `json:"thinking"`
+	OutputConfig outputConfig   `json:"output_config"`
 }
 
-// thinkingConfig 는 확장 사고 설정이다. 우리는 "disabled" 만 쓴다.
+// thinkingConfig 는 확장 사고 설정이다.
+//
+// ★ 2026-09-20 — 껐다가 되돌렸다.
+//
+// 처음에는 껐다. 8초 타임아웃과 max_tokens 1024 안에서 생각 토큰이 자리를
+// 먹는 것이 걱정이었고, "정해진 스키마를 채우는 단순 작업" 이라고 봤다.
+// 단순 작업이 아니었다. 한 문장에서 항목 예닐곱 개를 동시에 골라내
+// 각각 enum 에 맞추는 일이다. 생각 없이 한 번 훑으면 가장 눈에 띄는 항목
+// 하나만 채우고 끝낸다.
+//
+// 실제 증상 — "서른둘이고 관악구 원룸 월세 살아요. 보증금 천만원에 월
+// 오십오만원 냅니다. 다니던 회사가 지난달 문을 닫았어요." 에서 뽑힌 것이
+// employmentStatus 하나뿐이었고, 되묻기에서 "주거 형태가 어떻게 되나요" 를
+// 물었다. 방금 월세라고 말한 것을. 도구 스키마에 필드 설명을 붙여도
+// 달라지지 않았다 — 지시의 문제가 아니라 읽는 깊이의 문제였다.
 //
 // ※ budget_tokens 는 Sonnet 5 에서 제거됐다. 넣으면 400 이다.
+// ※ Sonnet 5 에서 켜는 방법은 adaptive 하나뿐이다. 깊이는 effort 로 조절한다.
 type thinkingConfig struct {
 	Type string `json:"type"`
+}
+
+// outputConfig 는 생각의 깊이를 정한다.
+//
+// low 로 둔다. 추출은 어려운 추론이 아니라 빠뜨리지 않는 것이 관건이고,
+// 8초 안에 끝나야 한다. low 로 부족하면 medium 까지만 올린다 —
+// 그 위는 이 작업에 쓸 이유가 없고 출력 토큰만 늘린다($10/1M).
+type outputConfig struct {
+	Effort string `json:"effort"`
 }
 
 // systemBlock 은 시스템 문구 한 덩이다. 마지막 블록에 캐시 표시를 단다.
@@ -205,13 +232,14 @@ func (c *Client) callTool(ctx context.Context, system, user, toolName, toolDesc 
 	}
 
 	body, err := json.Marshal(messagesRequest{
-		Model:      c.cfg.Model,
-		MaxTokens:  defaultMaxTokens,
-		System:     systemPrompt(system),
-		Messages:   []message{{Role: "user", Content: user}},
-		Tools:      []toolSpec{{Name: toolName, Description: toolDesc, InputSchema: schema}},
-		ToolChoice: toolChoice{Type: "tool", Name: toolName},
-		Thinking:   thinkingConfig{Type: "disabled"},
+		Model:        c.cfg.Model,
+		MaxTokens:    defaultMaxTokens,
+		System:       systemPrompt(system),
+		Messages:     []message{{Role: "user", Content: user}},
+		Tools:        []toolSpec{{Name: toolName, Description: toolDesc, InputSchema: schema}},
+		ToolChoice:   toolChoice{Type: "tool", Name: toolName},
+		Thinking:     thinkingConfig{Type: "adaptive"},
+		OutputConfig: outputConfig{Effort: "low"},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("요청을 만들지 못했습니다: %w", err)
